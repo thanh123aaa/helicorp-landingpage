@@ -11,12 +11,12 @@ const App: React.FC = () => {
         onTrackingClick={() => {}}
       />
       <main style={{ flexGrow: 1, paddingTop: '120px', paddingBottom: '100px', textAlign: 'center' }}>
-        <div className="container">
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', marginBottom: '1rem' }}>
-            HelioRing - Giao di?n n?n t?ng & Theme System
+        <div className="container animate-slide-up">
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.8rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+            HelioRing - Giao diện nền tảng & Theme System
           </h2>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Giao di?n dang du?c ho�n thi?n v� gh�p r�p c�c b? ph?n ? c�c nh�nh t�nh nang ti?p theo.
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto', fontSize: '1.1rem', lineHeight: '1.6' }}>
+            Chào mừng bạn đến với HelioRing! Đây là nhánh tính năng <strong>feature/theme-layout</strong>. Chúng tôi đã xây dựng xong cấu trúc Layout, Hệ thống màu sáng tối (Light/Dark Mode), và hệ thống thông báo Toast. Các tính năng tiếp theo sẽ được ghép nối từng bước ở các nhánh tương ứng.
           </p>
         </div>
       </main>
