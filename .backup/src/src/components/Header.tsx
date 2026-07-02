@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
+import { useShop } from '../context/ShopContext';
 import { Sun, Moon, ShoppingCart, Heart, Menu, X, Activity } from 'lucide-react';
 
 interface HeaderProps {
@@ -10,18 +11,18 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick, onTrackingClick }) => {
   const { theme, toggleTheme } = useTheme();
+  const { cart, wishlist } = useShop();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Mock values for Step 2 (will link to ShopContext in Step 4)
-  const cartCount = 0;
-  const wishlistCount = 0;
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const wishlistCount = wishlist.length;
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
-      const offset = 80;
+      const offset = 80; // Header height
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = element.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
@@ -42,9 +43,10 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick, on
             <span className="logo-ring-effect"></span>
             <Activity className="logo-icon" size={20} />
           </div>
-          <span className="logo-text">Helio<span>Watch</span></span>
+          <span className="logo-text">Helio<span>Ring</span></span>
         </a>
 
+        {/* Desktop Nav */}
         <nav className="desktop-nav">
           <a href="#features" onClick={(e) => handleNavClick(e, 'features')}>Tính năng</a>
           <a href="#customizer" onClick={(e) => handleNavClick(e, 'customizer')}>Cấu hình</a>
@@ -82,6 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick, on
         </div>
       </div>
 
+      {/* Mobile Nav Overlay */}
       {mobileMenuOpen && (
         <nav className="mobile-nav glass-panel animate-fade-in">
           <a href="#features" onClick={(e) => handleNavClick(e, 'features')}>Tính năng</a>

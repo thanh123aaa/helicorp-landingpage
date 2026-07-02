@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
               <div className="logo-icon-wrapper">
                 <Activity size={18} />
               </div>
-              <span className="logo-text">Helio<span>Watch</span></span>
+              <span className="logo-text">Helio<span>Ring</span></span>
             </div>
             <p className="footer-slogan">
               Giải pháp theo dõi sức khỏe chủ động cao cấp, đồng hành cùng bạn kiến tạo cuộc sống khỏe mạnh và tràn đầy năng lượng.
