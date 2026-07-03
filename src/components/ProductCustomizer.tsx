@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useShop, productColors, PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_ORIGINAL_PRICE } from '../context/ShopContext';
+import { Reveal } from './Reveal';
+import { useShop, productColors, PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_ORIGINAL_PRICE, getCustomWatchImage } from '../context/ShopContext';
 import { useToast } from '../context/ToastContext';
 import { useTracking } from '../hooks/useTracking';
 import { Heart, ShoppingBag, Ruler, Check } from 'lucide-react';
@@ -14,12 +15,17 @@ export const ProductCustomizer: React.FC = () => {
   const [selectedStrap, setSelectedStrap] = useState<string>('silicon'); // Default strap type
   const [quantity, setQuantity] = useState<number>(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
 
   const activeColorObj = productColors.find(c => c.id === selectedColor) || productColors[0];
 
   const handleColorChange = (colorId: string, colorName: string) => {
-    setSelectedColor(colorId);
-    addToRecentlyViewed(colorId);
+    if (colorId !== selectedColor) {
+      setImageLoading(true);
+      setSelectedColor(colorId);
+      addToRecentlyViewed(colorId);
+    }
     trackEvent(`Chọn màu đồng hồ: ${colorName}`, 'Product Customizer', 'Color Option Click');
   };
 
@@ -29,23 +35,30 @@ export const ProductCustomizer: React.FC = () => {
   };
 
   const handleStrapChange = (strapType: string) => {
-    setSelectedStrap(strapType);
+    if (strapType !== selectedStrap) {
+      setImageLoading(true);
+      setSelectedStrap(strapType);
+    }
     trackEvent(`Chọn chất liệu dây: ${strapType}`, 'Product Customizer', 'Strap Option Click');
   };
 
   const handleAddToCart = () => {
-    addToCart(selectedColor, selectedSize, quantity);
+    setIsAdding(true);
+    addToCart(selectedColor, selectedSize, quantity, selectedStrap);
     trackEvent(`Thêm vào giỏ hàng: ${PRODUCT_NAME} (${activeColorObj.name}, Size ${selectedSize}mm, Dây ${selectedStrap}, SL: ${quantity})`, 'E-commerce', 'Button Add To Cart');
     showToast(
       'Đã thêm vào giỏ hàng',
       `${PRODUCT_NAME} - ${activeColorObj.name} (${selectedSize}mm - Dây ${selectedStrap}) x ${quantity} đã được thêm thành công!`,
       'success'
     );
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 1200);
   };
 
   const handleToggleWishlist = () => {
-    toggleWishlist(selectedColor, selectedSize);
-    const added = !isInWishlist(selectedColor, selectedSize);
+    toggleWishlist(selectedColor, selectedSize, selectedStrap);
+    const added = !isInWishlist(selectedColor, selectedSize, selectedStrap);
     trackEvent(`${added ? 'Thêm vào' : 'Xóa khỏi'} mục yêu thích: ${PRODUCT_NAME} (${activeColorObj.name}, Size ${selectedSize}mm)`, 'E-commerce', 'Button Wishlist');
     showToast(
       added ? 'Đã lưu yêu thích' : 'Đã bỏ yêu thích',
@@ -67,28 +80,39 @@ export const ProductCustomizer: React.FC = () => {
   return (
     <section id="customizer" className="customizer-section">
       <div className="container">
-        <h2 className="title-section">
+        
+        {/* Configurator Header */}
+        <h2 className="customizer-main-title">
           Cá nhân hóa <span>HelioWatch</span> của bạn
         </h2>
         
-        <div className="customizer-grid">
-          {/* Left Side: Product Image Display */}
+        <Reveal>
+          <div className="customizer-grid">
+          
+          {/* ── LEFT COLUMN: Massive Interactive Watch Preview ── */}
           <div className="customizer-visual-panel">
-            <div className="customizer-image-container glass-panel">
-              <img 
-                src={activeColorObj.image} 
-                alt={`${PRODUCT_NAME} ${activeColorObj.name}`} 
-                className="customizer-watch-image animate-fade-in"
-                key={selectedColor}
-                width="450"
-                height="450"
+            <div className="customizer-preview-box">
+              {/* Glowing aura color matched to selected watch */}
+              <div 
+                className="customizer-glow-aura" 
+                style={{ backgroundColor: activeColorObj.hex }}
               />
+              <img 
+                src={getCustomWatchImage(selectedColor, selectedStrap)} 
+                alt={`${PRODUCT_NAME} ${activeColorObj.name}`} 
+                className={`customizer-watch-image ${imageLoading ? 'image-loading' : ''}`}
+                key={`${selectedColor}-${selectedStrap}`}
+                onLoad={() => setImageLoading(false)}
+              />
+              {imageLoading && (
+                <div className="customizer-skeleton" />
+              )}
             </div>
             
-            {/* Recently Viewed Strip */}
+            {/* Recently Viewed (Minimal circles) */}
             {recentlyViewed.length > 0 && (
-              <div className="recently-viewed-container">
-                <h4 className="recent-title">Màu sắc vừa xem:</h4>
+              <div className="recently-viewed-panel">
+                <h4 className="recent-title">Đã xem gần đây:</h4>
                 <div className="recent-list">
                   {recentlyViewed.map(colorId => {
                     const colorObj = productColors.find(c => c.id === colorId);
@@ -100,8 +124,8 @@ export const ProductCustomizer: React.FC = () => {
                         onClick={() => handleColorChange(colorId, colorObj.name)}
                         title={colorObj.name}
                       >
-                        <img src={colorObj.image} alt={colorObj.name} width="40" height="40" />
-                        <span className="recent-dot" style={{ backgroundColor: colorObj.hex }}></span>
+                        <img src={colorObj.image} alt={colorObj.name} className="recent-thumb-img" />
+                        <span className="recent-color-badge" style={{ backgroundColor: colorObj.hex }} />
                       </button>
                     );
                   })}
@@ -110,8 +134,10 @@ export const ProductCustomizer: React.FC = () => {
             )}
           </div>
 
-          {/* Right Side: Options Form */}
-          <div className="customizer-form-panel glass-panel">
+          {/* ── RIGHT COLUMN: Sleek Customizer Controls ── */}
+          <div className="customizer-form-panel">
+            
+            {/* Meta details */}
             <div className="product-meta">
               <span className="product-category">Đồng hồ sức khỏe thế hệ mới</span>
               <h3 className="product-name">{PRODUCT_NAME}</h3>
@@ -123,7 +149,7 @@ export const ProductCustomizer: React.FC = () => {
               </div>
             </div>
 
-            {/* Colors Select */}
+            {/* Selector Option 1: Watch Colors */}
             <div className="option-group">
               <h4 className="option-title">
                 Màu vỏ Titan: <span>{activeColorObj.name}</span>
@@ -137,14 +163,13 @@ export const ProductCustomizer: React.FC = () => {
                     style={{ '--color-hex': color.hex } as React.CSSProperties}
                     title={color.name}
                   >
-                    <span className="color-core"></span>
-                    {selectedColor === color.id && <Check className="color-check-icon" size={12} />}
+                    <span className="color-dot-inner"></span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Case Size Select */}
+            {/* Selector Option 2: Case Sizes (Sliding Toggle) */}
             <div className="option-group">
               <div className="option-title-row">
                 <h4 className="option-title">
@@ -154,29 +179,48 @@ export const ProductCustomizer: React.FC = () => {
                   <Ruler size={14} /> Hướng dẫn chọn size
                 </button>
               </div>
-              <div className="sizes-grid">
-                {[41, 45].map(size => (
-                  <button
-                    key={size}
-                    className={`size-btn-item ${selectedSize === size ? 'active' : ''}`}
-                    onClick={() => handleSizeChange(size)}
-                  >
-                    Size {size}mm
-                  </button>
-                ))}
+              
+              <div className="custom-segmented-control">
+                <div 
+                  className="segmented-control-indicator" 
+                  style={{
+                    left: selectedSize === 41 ? '2px' : 'calc(50% + 2px)',
+                    width: 'calc(50% - 4px)'
+                  }}
+                />
+                <button 
+                  className={`segmented-btn ${selectedSize === 41 ? 'active' : ''}`}
+                  onClick={() => handleSizeChange(41)}
+                >
+                  Size 41mm
+                </button>
+                <button 
+                  className={`segmented-btn ${selectedSize === 45 ? 'active' : ''}`}
+                  onClick={() => handleSizeChange(45)}
+                >
+                  Size 45mm
+                </button>
               </div>
             </div>
 
-            {/* Strap Select */}
+            {/* Selector Option 3: Strap Types (Sliding Toggle) */}
             <div className="option-group">
               <h4 className="option-title">
                 Dây đeo: <span>{strapTypes.find(s => s.id === selectedStrap)?.name}</span>
               </h4>
-              <div className="strap-selectors-list">
+              
+              <div className="custom-segmented-control">
+                <div 
+                  className="segmented-control-indicator" 
+                  style={{
+                    left: selectedStrap === 'silicon' ? '2px' : selectedStrap === 'leather' ? 'calc(33.33% + 2px)' : 'calc(66.66% + 2px)',
+                    width: 'calc(33.33% - 4px)'
+                  }}
+                />
                 {strapTypes.map(strap => (
                   <button
                     key={strap.id}
-                    className={`strap-btn-item ${selectedStrap === strap.id ? 'active' : ''}`}
+                    className={`segmented-btn ${selectedStrap === strap.id ? 'active' : ''}`}
                     onClick={() => handleStrapChange(strap.id)}
                   >
                     {strap.name}
@@ -185,46 +229,61 @@ export const ProductCustomizer: React.FC = () => {
               </div>
             </div>
 
-            {/* Quantity Selector & Action Buttons */}
-            <div className="purchase-controls">
-              <div className="quantity-selector-wrapper">
+            {/* Stepper + Add to Cart + Wishlist row */}
+            <div className="purchase-controls-row">
+              
+              <div className="quantity-stepper">
                 <button 
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  className="qty-btn"
+                  className="stepper-btn"
                 >-</button>
-                <span className="qty-value">{quantity}</span>
+                <span className="stepper-val">{quantity}</span>
                 <button 
                   onClick={() => setQuantity(q => q + 1)}
-                  className="qty-btn"
+                  className="stepper-btn"
                 >+</button>
               </div>
 
-              <button className="btn btn-primary add-to-cart-btn" onClick={handleAddToCart}>
-                <ShoppingBag size={18} /> Thêm vào giỏ hàng
+              <button 
+                className={`custom-cart-btn ${isAdding ? 'btn-adding' : ''}`} 
+                onClick={handleAddToCart}
+                disabled={isAdding}
+              >
+                {isAdding ? (
+                  <>
+                    <Check size={18} className="animate-scale-up" /> Đã thêm!
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag size={18} /> Thêm vào giỏ hàng
+                  </>
+                )}
               </button>
 
               <button 
-                className={`btn-icon wishlist-btn ${isInWishlist(selectedColor, selectedSize) ? 'active' : ''}`} 
+                className={`custom-wishlist-btn ${isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'active' : ''}`} 
                 onClick={handleToggleWishlist}
                 title="Lưu vào mục yêu thích"
               >
-                <Heart size={20} fill={isInWishlist(selectedColor, selectedSize) ? 'var(--brand-error)' : 'none'} stroke={isInWishlist(selectedColor, selectedSize) ? 'var(--brand-error)' : 'currentColor'} />
+                <Heart size={20} fill={isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'var(--brand-error)' : 'none'} stroke={isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'var(--brand-error)' : 'currentColor'} />
               </button>
             </div>
+            
           </div>
         </div>
+        </Reveal>
       </div>
 
       {/* Size Guide Modal */}
       {showSizeGuide && (
-        <div className="size-guide-modal-overlay animate-fade-in">
-          <div className="size-guide-modal glass-panel animate-slide-up">
+        <div className="size-guide-modal-overlay">
+          <div className="size-guide-modal">
             <div className="modal-header">
-              <h3>Hướng Dẫn Chọn Kích Thước HelioWatch</h3>
+              <h3>Hướng Dẫn Chọn Kích Thước</h3>
               <button className="close-modal-btn" onClick={() => setShowSizeGuide(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <p>HelioWatch được thiết kế với 2 phiên bản kích thước vỏ để phù hợp hoàn hảo với cổ tay của từng cá nhân:</p>
+              <p>HelioWatch được thiết kế với 2 phiên bản kích thước vỏ để phù hợp hoàn hảo với cổ tay của bạn:</p>
               
               <div className="size-table-wrapper">
                 <table className="size-table">
@@ -265,171 +324,231 @@ export const ProductCustomizer: React.FC = () => {
       )}
 
       <style>{`
+        /* ── CUSTOMIZER SECTION ── */
         .customizer-section {
-          padding: 8rem 0;
-          background-color: var(--bg-secondary);
+          padding: 120px 0 100px;
+          background-color: var(--bg-primary);
+          transition: background 0.5s ease;
+          border-top: 1px solid var(--border-color);
         }
 
+        .customizer-main-title {
+          font-family: var(--font-sans);
+          font-size: clamp(2.4rem, 3.8vw, 3.2rem);
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          color: var(--text-primary);
+          text-align: center;
+          margin-bottom: 60px;
+        }
+
+        .customizer-main-title span {
+          color: var(--primary-gold);
+        }
+
+        /* ── GRID LAYOUT ── */
         .customizer-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 4rem;
-          margin-top: 3.5rem;
-          align-items: start;
+          grid-template-columns: 1.1fr 0.9fr;
+          gap: 96px;
+          align-items: center;
         }
 
+        /* ── LEFT COLUMN: PREVIEW ── */
         .customizer-visual-panel {
           display: flex;
           flex-direction: column;
-          gap: 2rem;
+          gap: 32px;
+          align-items: center;
+          width: 100%;
         }
 
-        .customizer-image-container {
-          background-color: var(--surface-primary);
-          border: 1px solid var(--border-color);
-          border-radius: 24px;
-          height: 480px;
+        .customizer-preview-box {
+          position: relative;
+          width: 100%;
+          max-width: 520px;
+          height: 520px;
           display: flex;
           align-items: center;
           justify-content: center;
-          overflow: hidden;
-          padding: 2rem;
+        }
+
+        /* Dynamic soft breathing halo aura behind watch */
+        .customizer-glow-aura {
+          position: absolute;
+          width: 280px;
+          height: 280px;
+          border-radius: 50%;
+          filter: blur(100px);
+          opacity: 0.16;
+          z-index: 1;
+          pointer-events: none;
+          transition: background-color 0.8s ease;
+          animation: auraPulse 6s ease-in-out infinite;
+        }
+
+        [data-theme='dark'] .customizer-glow-aura {
+          opacity: 0.28;
+          filter: blur(80px);
+        }
+
+        @keyframes auraPulse {
+          0%, 100% { transform: scale(1); opacity: 0.16; }
+          50% { transform: scale(1.15); opacity: 0.24; }
         }
 
         .customizer-watch-image {
-          max-width: 100%;
+          position: relative;
+          z-index: 2;
+          max-width: 82%;
           height: auto;
-          filter: drop-shadow(0 15px 40px rgba(0,0,0,0.15));
-          transition: transform 0.3s ease;
+          border-radius: 24px; /* Bo viền ảnh mềm mại để che góc vuông */
+          filter: drop-shadow(0 20px 40px rgba(0,0,0,0.12));
+          animation: watchFloat 6s ease-in-out infinite;
         }
 
-        .customizer-watch-image:hover {
-          transform: scale(1.05);
+        [data-theme='dark'] .customizer-watch-image {
+          filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
         }
 
-        /* Recently viewed */
-        .recently-viewed-container {
+        @keyframes watchFloat {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-10px) rotate(1deg); }
+        }
+
+        /* Recently viewed thumbnails */
+        .recently-viewed-panel {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
+          align-items: center;
         }
 
         .recent-title {
-          font-size: 0.85rem;
+          font-family: var(--font-sans);
+          font-size: 0.8rem;
+          font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.05em;
           color: var(--text-tertiary);
-          font-weight: 700;
         }
 
         .recent-list {
           display: flex;
-          gap: 12px;
+          gap: 14px;
         }
 
         .recent-item {
-          width: 60px;
-          height: 60px;
-          border-radius: 12px;
+          position: relative;
+          width: 52px;
+          height: 52px;
+          border-radius: 50%;
           border: 1px solid var(--border-color);
           background-color: var(--surface-primary);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          position: relative;
-          overflow: hidden;
-          transition: var(--transition-fast);
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+          padding: 4px;
+        }
+
+        .recent-item:hover {
+          transform: translateY(-2px);
+          border-color: var(--text-primary);
         }
 
         .recent-item.active {
           border-color: var(--text-primary);
-          box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(0,0,0,0.06);
         }
 
-        .recent-item img {
-          width: 80%;
+        .recent-thumb-img {
+          width: 85%;
           height: auto;
+          object-fit: contain;
         }
 
-        .recent-dot {
+        .recent-color-badge {
           position: absolute;
-          bottom: 4px;
-          right: 4px;
-          width: 8px;
-          height: 8px;
+          bottom: 0;
+          right: 0;
+          width: 12px;
+          height: 12px;
           border-radius: 50%;
-          border: 1px solid var(--surface-primary);
+          border: 2px solid var(--surface-primary);
         }
 
-        /* Form panel */
+        /* ── RIGHT COLUMN: CONFIGURATOR FORM ── */
         .customizer-form-panel {
-          background-color: var(--surface-primary);
-          border: 1px solid var(--border-color);
-          border-radius: 24px;
-          padding: 3rem;
           display: flex;
           flex-direction: column;
-          gap: 2.2rem;
+          gap: 36px;
         }
 
         .product-meta {
           border-bottom: 1px solid var(--border-color);
-          padding-bottom: 1.5rem;
+          padding-bottom: 24px;
         }
 
         .product-category {
-          font-size: 0.75rem;
+          font-size: 0.72rem;
+          font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.1em;
           color: var(--primary-gold);
-          font-weight: 800;
+          display: block;
+          margin-bottom: 8px;
         }
 
         .product-name {
-          font-size: 2.2rem;
+          font-family: var(--font-sans);
+          font-size: 2.6rem;
           font-weight: 800;
-          letter-spacing: -0.02em;
+          letter-spacing: -0.03em;
           color: var(--text-primary);
-          margin: 4px 0 12px;
+          margin-bottom: 16px;
         }
 
         .product-pricing {
           display: flex;
-          align-items: center;
-          gap: 1rem;
+          align-items: baseline;
+          gap: 12px;
         }
 
         .current-price {
-          font-size: 1.8rem;
+          font-size: 2rem;
           font-weight: 800;
           color: var(--text-primary);
         }
 
         .original-price {
-          font-size: 1.2rem;
+          font-size: 1.25rem;
           text-decoration: line-through;
           color: var(--text-tertiary);
         }
 
         .discount-tag {
           font-size: 0.75rem;
-          background-color: rgba(239, 68, 68, 0.1);
+          font-weight: 700;
+          background-color: rgba(239, 68, 68, 0.08);
           color: var(--brand-error);
           padding: 4px 8px;
           border-radius: 6px;
-          font-weight: 700;
+          align-self: center;
         }
 
-        /* Options group */
+        /* Option group container */
         .option-group {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 14px;
         }
 
         .option-title {
-          font-size: 0.9rem;
+          font-family: var(--font-sans);
+          font-size: 0.88rem;
           font-weight: 700;
           color: var(--text-primary);
         }
@@ -437,6 +556,7 @@ export const ProductCustomizer: React.FC = () => {
         .option-title span {
           color: var(--text-secondary);
           font-weight: 500;
+          margin-left: 4px;
         }
 
         .option-title-row {
@@ -446,187 +566,195 @@ export const ProductCustomizer: React.FC = () => {
         }
 
         .size-guide-btn {
-          font-size: 0.85rem;
-          color: var(--brand-primary);
+          font-family: var(--font-sans);
+          font-size: 0.84rem;
           font-weight: 600;
+          color: #0066cc;
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          transition: var(--transition-fast);
+          transition: opacity 0.2s;
         }
 
         .size-guide-btn:hover {
-          opacity: 0.8;
-          transform: translateX(2px);
+          text-decoration: underline;
         }
 
-        /* Color buttons */
+        /* Color selectors (Double rings style like Apple) */
         .color-selectors-list {
           display: flex;
-          gap: 14px;
+          gap: 16px;
         }
 
         .color-btn-item {
-          width: 36px;
-          height: 36px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           border: 2px solid transparent;
+          background: transparent;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: var(--transition-fast);
+          transition: border-color 0.3s;
+          padding: 0;
         }
 
         .color-btn-item.active {
           border-color: var(--text-primary);
         }
 
-        .color-core {
-          width: 24px;
-          height: 24px;
+        .color-dot-inner {
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           background-color: var(--color-hex);
           display: block;
-          box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+          box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .color-check-icon {
+        /* ── SLIDING TABS (Segmented Control) ── */
+        .custom-segmented-control {
+          position: relative;
+          display: flex;
+          background: var(--bg-secondary);
+          border-radius: 100px;
+          padding: 2px;
+          height: 48px;
+          overflow: hidden;
+        }
+
+        .segmented-control-indicator {
           position: absolute;
-          color: #ffffff;
+          top: 2px;
+          bottom: 2px;
+          background: var(--text-primary);
+          border-radius: 100px;
+          transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          z-index: 1;
         }
 
-        /* Sizes grid */
-        .sizes-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-        }
-
-        .size-btn-item {
-          padding: 1rem;
-          border-radius: 12px;
-          border: 1px solid var(--border-color);
-          background-color: var(--surface-primary);
+        .segmented-btn {
+          position: relative;
+          z-index: 2;
+          flex: 1;
+          height: 100%;
+          background: transparent;
+          border: none;
+          border-radius: 100px;
+          font-family: var(--font-sans);
           font-weight: 700;
-          font-size: 0.95rem;
-          color: var(--text-primary);
+          font-size: 0.88rem;
+          color: var(--text-secondary);
           cursor: pointer;
-          transition: var(--transition-fast);
+          transition: color 0.4s;
+          padding: 0;
+          text-align: center;
         }
 
-        .size-btn-item:hover {
-          border-color: var(--text-primary);
-          background-color: var(--bg-secondary);
-        }
-
-        .size-btn-item.active {
-          background-color: var(--text-primary);
+        .segmented-btn.active {
           color: var(--bg-primary);
-          border-color: var(--text-primary);
         }
 
-        /* Strap button selectors */
-        .strap-selectors-list {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 10px;
-        }
-
-        .strap-btn-item {
-          padding: 0.8rem;
-          border-radius: 12px;
-          border: 1px solid var(--border-color);
-          background-color: var(--surface-primary);
-          font-weight: 700;
-          font-size: 0.85rem;
-          color: var(--text-primary);
-          cursor: pointer;
-          transition: var(--transition-fast);
-        }
-
-        .strap-btn-item:hover {
-          border-color: var(--text-primary);
-          background-color: var(--bg-secondary);
-        }
-
-        .strap-btn-item.active {
-          background-color: var(--text-primary);
-          color: var(--bg-primary);
-          border-color: var(--text-primary);
-        }
-
-        /* Controls */
-        .purchase-controls {
+        /* ── FOOTER CONTROLS ROW ── */
+        .purchase-controls-row {
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin-top: 1.5rem;
+          gap: 16px;
           border-top: 1px solid var(--border-color);
-          padding-top: 2rem;
+          padding-top: 32px;
+          margin-top: 8px;
         }
 
-        .quantity-selector-wrapper {
+        /* Rounded Stepper */
+        .quantity-stepper {
           display: inline-flex;
           align-items: center;
           border: 1px solid var(--border-color);
           border-radius: 100px;
-          height: 48px;
+          height: 52px;
           overflow: hidden;
-          background-color: var(--bg-secondary);
+          background: var(--bg-secondary);
         }
 
-        .qty-btn {
-          width: 40px;
+        .stepper-btn {
+          width: 44px;
           height: 100%;
-          font-size: 1.1rem;
+          font-size: 1.2rem;
           font-weight: 700;
           color: var(--text-secondary);
-          transition: var(--transition-fast);
+          transition: background 0.2s, color 0.2s;
         }
 
-        .qty-btn:hover {
+        .stepper-btn:hover {
           background-color: var(--border-color);
           color: var(--text-primary);
         }
 
-        .qty-value {
-          width: 32px;
+        .stepper-val {
+          width: 36px;
           text-align: center;
           font-weight: 700;
           font-size: 0.95rem;
+          color: var(--text-primary);
         }
 
-        .add-to-cart-btn {
+        /* Cart & Wishlist Buttons */
+        .custom-cart-btn {
           flex-grow: 1;
-          height: 48px;
+          height: 52px;
           border-radius: 100px;
+          background-color: var(--text-primary);
+          color: var(--bg-primary);
+          font-family: var(--font-sans);
+          font-weight: 700;
           font-size: 0.95rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          border: none;
+          cursor: pointer;
+          transition: transform 0.2s, opacity 0.2s;
         }
 
-        .wishlist-btn {
-          width: 48px;
-          height: 48px;
+        .custom-cart-btn:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
+        }
+
+        .custom-cart-btn:active {
+          transform: translateY(1px);
+        }
+
+        .custom-wishlist-btn {
+          width: 52px;
+          height: 52px;
           border-radius: 50%;
           border: 1px solid var(--border-color);
+          background: var(--surface-primary);
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: var(--transition-fast);
+          transition: border-color 0.3s, background-color 0.3s;
+          color: var(--text-secondary);
+          padding: 0;
         }
 
-        .wishlist-btn:hover {
+        .custom-wishlist-btn:hover {
           border-color: var(--brand-error);
           background-color: rgba(239, 68, 68, 0.05);
+          color: var(--brand-error);
         }
 
-        .wishlist-btn.active {
+        .custom-wishlist-btn.active {
           border-color: var(--brand-error);
           background-color: rgba(239, 68, 68, 0.08);
+          color: var(--brand-error);
         }
 
-        /* Size Guide Modal Styling */
+        /* ── SIZE GUIDE MODAL ── */
         .size-guide-modal-overlay {
           position: fixed;
           inset: 0;
@@ -636,7 +764,7 @@ export const ProductCustomizer: React.FC = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 1.5rem;
+          padding: 24px;
         }
 
         .size-guide-modal {
@@ -644,13 +772,13 @@ export const ProductCustomizer: React.FC = () => {
           border: 1px solid var(--border-color);
           width: 100%;
           max-width: 640px;
-          border-radius: 24px;
+          border-radius: 28px;
           overflow: hidden;
           box-shadow: var(--glass-shadow);
         }
 
         .modal-header {
-          padding: 1.5rem 2rem;
+          padding: 24px 32px;
           border-bottom: 1px solid var(--border-color);
           display: flex;
           justify-content: space-between;
@@ -658,6 +786,7 @@ export const ProductCustomizer: React.FC = () => {
         }
 
         .modal-header h3 {
+          font-family: var(--font-sans);
           font-size: 1.3rem;
           font-weight: 800;
           letter-spacing: -0.02em;
@@ -666,7 +795,7 @@ export const ProductCustomizer: React.FC = () => {
         .close-modal-btn {
           font-size: 1.2rem;
           color: var(--text-tertiary);
-          transition: var(--transition-fast);
+          transition: color 0.2s, transform 0.2s;
         }
 
         .close-modal-btn:hover {
@@ -675,18 +804,18 @@ export const ProductCustomizer: React.FC = () => {
         }
 
         .modal-body {
-          padding: 2rem;
+          padding: 32px;
           max-height: 80vh;
           overflow-y: auto;
           display: flex;
           flex-direction: column;
-          gap: 1.5rem;
+          gap: 24px;
         }
 
         .size-table-wrapper {
           overflow-x: auto;
           border: 1px solid var(--border-color);
-          border-radius: 12px;
+          border-radius: 16px;
         }
 
         .size-table {
@@ -697,7 +826,7 @@ export const ProductCustomizer: React.FC = () => {
         }
 
         .size-table th, .size-table td {
-          padding: 1rem;
+          padding: 16px;
           border-bottom: 1px solid var(--border-color);
         }
 
@@ -711,47 +840,92 @@ export const ProductCustomizer: React.FC = () => {
         }
 
         .size-guide-steps h4 {
+          font-family: var(--font-sans);
           font-size: 1rem;
           font-weight: 700;
           margin-bottom: 8px;
         }
 
         .size-guide-steps ol {
-          padding-left: 1.25rem;
+          padding-left: 20px;
           font-size: 0.9rem;
           color: var(--text-secondary);
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 10px;
         }
 
+        /* ── SKELETON & MICRO-INTERACTION EFFECTS ── */
+        .customizer-skeleton {
+          position: absolute;
+          z-index: 3;
+          width: 280px;
+          height: 280px;
+          border-radius: 50%;
+          background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border-color) 50%, var(--bg-secondary) 75%);
+          background-size: 200% 100%;
+          animation: loading-skeleton 1.5s infinite, watchFloat 6s ease-in-out infinite;
+          opacity: 0.75;
+          pointer-events: none;
+        }
+
+        .image-loading {
+          opacity: 0.15;
+          filter: blur(8px) drop-shadow(0 20px 40px rgba(0,0,0,0.05));
+          transition: opacity 0.3s, filter 0.3s;
+        }
+
+        .custom-cart-btn.btn-adding {
+          background-color: var(--brand-success);
+          color: #ffffff;
+        }
+
+        .animate-scale-up {
+          animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scaleUp {
+          from { transform: scale(0.6); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+
+        /* ── RESPONSIVE ── */
         @media (max-width: 992px) {
           .customizer-grid {
             grid-template-columns: 1fr;
-            gap: 3rem;
+            gap: 48px;
           }
 
-          .customizer-image-container {
-            height: 380px;
+          .customizer-preview-box {
+            height: 400px;
+          }
+
+          .customizer-glow-aura {
+            width: 220px;
+            height: 220px;
+          }
+
+          .customizer-watch-image {
+            max-width: 70%;
           }
         }
 
         @media (max-width: 576px) {
-          .customizer-form-panel {
-            padding: 1.5rem;
+          .customizer-section {
+            padding: 80px 0 60px;
           }
 
-          .purchase-controls {
+          .purchase-controls-row {
             flex-wrap: wrap;
           }
 
-          .add-to-cart-btn {
+          .custom-cart-btn {
             order: 3;
             width: 100%;
           }
 
-          .strap-selectors-list {
-            grid-template-columns: 1fr;
+          .custom-segmented-control {
+            height: 44px;
           }
         }
       `}</style>

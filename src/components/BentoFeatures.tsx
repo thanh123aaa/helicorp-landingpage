@@ -1,623 +1,367 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Moon, Heart, Shield, Activity, Compass, Smartphone, Sparkles } from 'lucide-react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { Bell, Atom, ClipboardList, ChevronLeft, ChevronRight, Moon, Heart, Activity, Thermometer, AlertTriangle } from 'lucide-react';
 import { useTracking } from '../hooks/useTracking';
 
-interface BentoCardProps {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}
-
-const BentoCard: React.FC<BentoCardProps> = ({ children, className = '', delay = 0 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
+// Scroll reveal
+const useReveal = (threshold = 0.1) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={cardRef}
-      className={`apple-bento-card ${className} ${isVisible ? 'visible' : ''}`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
+    const el = ref.current; if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el); return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
 };
+const Reveal: React.FC<{ children: React.ReactNode; className?: string; delay?: number }> = ({ children, className = '', delay = 0 }) => {
+  const { ref, visible } = useReveal();
+  return <div ref={ref} className={`rv ${className} ${visible ? 'rv--on' : ''}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
+};
+
+// Gallery slides data
+const GALLERY_SLIDES = [
+  {
+    img: '/assets/feature-sleep.png',
+    color: '#bf5af2',
+    icon: <Moon size={15} />,
+    title: 'Theo dõi giấc ngủ',
+    desc: 'Điểm số giấc ngủ là thấy điểm số giấc ngủ. Chất lượng giấc ngủ tổng hợp dựa trên các yếu tố như thời gian ngủ, tổng thời gian ngủ sâu và nhiều thông số khác, để bạn có cái nhìn toàn diện về giấc ngủ của mình.',
+  },
+  {
+    img: '/assets/Theodoinhiptho.jpg',
+    color: '#30d158',
+    icon: <Heart size={15} />,
+    title: 'Theo dõi nhịp thở khi ngủ',
+    desc: 'Người ngủ là tình trạng nhiều người trải qua nhưng không hay biết. Ngưng thở khi ngủ có thể gây ra những gián đoạn liên tục làm gián đoạn thở trong khi ngủ.',
+  },
+  {
+    img: '/assets/Ungdungsinhhieu.jpg',
+    color: '#ffd60a',
+    icon: <AlertTriangle size={15} />,
+    title: 'Ứng dụng Sinh Hiệu',
+    desc: 'Tình hình sức khỏe ngay trên cổ tay bạn, có ngay. Xem nhanh dữ liệu sức khỏe các điểm của bạn, bao gồm nhịp tim, tần số hô hấp, nhiệt độ cổ tay, nồng độ ô xi trong máu và thời gian ngủ.',
+  },
+  {
+    img: '/assets/Theosattraitim.jpg',
+    color: '#ff375f',
+    icon: <Activity size={15} />,
+    title: 'Theo sát trái tim bạn',
+    desc: 'Dữ liệu sức khỏe tim mạch của bạn, có ngay. Xem nhanh các dấu hiệu sức khỏe tổng hợp bao gồm các điểm sức khỏe tim mạch, nhịp tim, huyết áp và nhiều thông số khác.',
+  },
+];
 
 export const BentoFeatures: React.FC = () => {
   const { trackEvent } = useTracking();
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [slide, setSlide] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const totalSlides = GALLERY_SLIDES.length;
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const handleCardClick = (title: string) => {
-    trackEvent(`Xem chi tiết tính năng: ${title}`, 'Features Section', 'Apple Bento Card Click');
+  // Duplicated buffer array for seamless circular sliding
+  const loopedSlides = [
+    GALLERY_SLIDES[totalSlides - 1], // buffer left (slide = -1)
+    ...GALLERY_SLIDES,               // index 0 to 4
+    ...GALLERY_SLIDES.slice(0, 3)    // buffer right (slide = 5, 6, 7)
+  ];
+
+  const nextSlide = useCallback(() => {
+    if (slide >= totalSlides || slide < 0) return; // Khóa click khi đang snap chuyển tiếp
+    setIsTransitioning(true);
+    setSlide(s => s + 1);
+  }, [slide, totalSlides]);
+
+  const prevSlide = () => {
+    if (slide >= totalSlides || slide < 0) return; // Khóa click khi đang snap chuyển tiếp
+    setIsTransitioning(true);
+    setSlide(s => s - 1);
   };
 
+  // Auto-advance every 4s
+  useEffect(() => {
+    timerRef.current = setInterval(nextSlide, 4000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [nextSlide]);
+
+  const resetTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(nextSlide, 4000);
+  };
+
+  // Instant snap loop logic khi chạm biên giới hạn
+  useEffect(() => {
+    if (slide === totalSlides) {
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setSlide(0);
+      }, 400); // khớp với thời gian transition CSS
+      return () => clearTimeout(timer);
+    }
+    if (slide === -1) {
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setSlide(totalSlides - 1);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [slide, totalSlides]);
+
   return (
-    <section id="features" className="apple-features-section">
-      <div className="container">
-        <div className="section-header animate-slide-up">
-          <h2 className="apple-section-title">
-            Công nghệ vượt trội. <br />
-            <span>Phong cách dẫn đầu.</span>
-          </h2>
-          <p className="apple-section-desc">
-            HelioWatch sở hữu loạt cảm biến sức khỏe tối tân nhất cùng màn hình AMOLED đỉnh cao, gói gọn tất cả trong một thiết kế tinh xảo, thời thượng.
-          </p>
+    <section id="features" className="ft-section">
+
+      {/* ── Intro heading with ambient bg ── */}
+      <div className="ft-intro">
+        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.jpg" alt="" aria-hidden="true" className="ft-intro-bg" />
+        <div className="ft-intro-bg-overlay" />
+        <Reveal>
+          <div className="ft-intro-inner">
+            <h2 className="ft-intro-heading">
+              Công nghệ vượt trội.<br />
+              <span className="ft-intro-sub">Phong cách dẫn đầu.</span>
+            </h2>
+            <p className="ft-intro-desc">
+              HelioWatch sở hữu loạt cảm biến sức khỏe tối tân nhất cùng màn hình AMOLED đỉnh cao,
+              gói gọn tất cả trong một thiết kế tinh xảo, thời thượng.
+            </p>
+          </div>
+        </Reveal>
+      </div>
+
+      {/* ── CARD 1: Health lifestyle — text ON image ── */}
+      <Reveal className="ft-card ft-card--health">
+        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.jpg" alt="Sức khỏe" className="ft-card-bg" />
+        <div className="ft-card-overlay ft-card-overlay--right" />
+        <div className="ft-card-content ft-card-content--right">
+          <Reveal delay={150}>
+            <span className="ft-tag" style={{ color: '#30d158' }}>Sức Khỏe</span>
+            <h3 className="ft-card-heading">
+              Hiểu cơ thể bạn<br />bằng cả trái tim.
+            </h3>
+            <p className="ft-card-desc">
+              Với hàng trăm chỉ số sức khỏe chuyên sâu, bạn nắm rõ cơ thể từng phút. Từ ECG đến theo dõi định kỳ, HelioWatch Series 3 là người bạn đồng hành sức khỏe đáng tin cậy nhất.
+            </p>
+          </Reveal>
+        </div>
+      </Reveal>
+
+      {/* ── SPOTLIGHT: Huyết áp — ảnh mờ phía sau ── */}
+      <div className="ft-spotlight">
+        {/* Ảnh nền mờ */}
+        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.jpg" alt="" aria-hidden="true" className="ft-spotlight-bg" />
+        <div className="ft-spotlight-overlay" />
+
+        <div className="ft-spotlight-inner">
+          <Reveal className="ft-spotlight-text">
+            <span className="ft-tag" style={{ color: '#ff375f' }}>Cảnh báo sớm</span>
+            <h2 className="ft-spotlight-heading">
+              Nhận thông báo về<br />huyết áp cao mãn tính.
+            </h2>
+            <p className="ft-spotlight-desc">
+              Tăng huyết áp, hay huyết áp cao, ảnh hưởng đến hơn 1,3 tỷ người trưởng thành trên thế giới và là nguyên nhân hàng đầu gây ra các căn bệnh tim, đột quỵ và tử vong. Tình trạng bệnh thường không được chẩn đoán do thường không có triệu chứng — và ngay cả khi đi khám bác sĩ, chỉ với một lần kiểm tra duy nhất, chứng bệnh này có thể dễ dàng bị bỏ qua.
+            </p>
+          </Reveal>
+
+          {/* 3-col icon features */}
+          <div className="ft-spotlight-cols">
+            {[
+              {
+                icon: <Bell size={32} strokeWidth={1.5} />,
+                color: '#64d2ff',
+                title: 'Nhận thông báo tăng huyết áp, chỉ cần đeo đồng hồ.',
+                body: 'Series 11 có thể thông báo cho bạn nếu thiết bị xác định được các mô hình tăng huyết áp. Bằng cách nào? Cảm biến quang học cung cấp dữ liệu cho một thuật toán có thể phát hiện hiện nguy cơ tăng huyết áp bằng cách phân tích tính cách các mạch máu của bạn phản ứng với nhịp đập của tim trong khoảng thời gian 30 ngày.',
+              },
+              {
+                icon: <Atom size={32} strokeWidth={1.5} />,
+                color: '#64d2ff',
+                title: 'Thông tin chuyên sâu đột phá. Đã được kiểm chứng khoa học.',
+                body: 'Chúng tôi đã phát triển tính năng thông báo huyết áp bằng cách sử dụng các phương pháp máy học tiên tiến cùng một loạt các nghiên cứu, với tổng cộng hơn 100.000 người tham gia. Tính năng đã được kiểm chứng trong một nghiên cứu lâm sàng.',
+              },
+              {
+                icon: <ClipboardList size={32} strokeWidth={1.5} />,
+                color: '#64d2ff',
+                title: 'Tạo bản ghi huyết áp. Nếu bạn nhận được thông báo.',
+                body: 'Nếu bạn nhận được thông báo tăng huyết áp và có máy đo huyết áp, bạn có thể theo dõi huyết áp của mình trong ứng dụng Sức Khỏe trên iPhone để tạo báo cáo, giúp các cuộc trò chuyện với nhà cung cấp dịch vụ chăm sóc sức khỏe của bạn trở nên hữu ích hơn.',
+              },
+            ].map((col, i) => (
+              <Reveal key={i} className="ft-col-item" delay={i * 150}>
+                <span className="ft-col-icon" style={{ color: col.color }}>
+                  {col.icon}
+                </span>
+                <h4 className="ft-col-title">{col.title}</h4>
+                <p className="ft-col-body">{col.body}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── GALLERY SLIDER ── */}
+      <div className="ft-gallery-section">
+        <div className="ft-gallery-header">
+          <Reveal>
+            <h3 className="ft-gallery-heading">Thêm nhiều tính năng hỗ trợ sức khỏe.</h3>
+          </Reveal>
+          <div className="ft-gallery-nav">
+            <button className="ft-nav-btn" onClick={() => { prevSlide(); resetTimer(); }} aria-label="Trước">
+              <ChevronLeft size={18} strokeWidth={2.5} />
+            </button>
+            <button className="ft-nav-btn" onClick={() => { nextSlide(); resetTimer(); }} aria-label="Sau">
+              <ChevronRight size={18} strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
 
-        <div className="apple-bento-grid">
-          {/* Card 1: Vòng hoạt động Activity Rings (Large - 2x2) */}
-          <BentoCard className="bento-span-2 bento-row-span-2 activity-card" delay={100}>
-            <div className="card-inner" onClick={() => handleCardClick('Vòng hoạt động Activity')}>
-              <div className="card-header-icon text-pink">
-                <Activity size={24} />
-              </div>
-              <div className="card-info">
-                <span className="card-tag text-pink">Vòng hoạt động</span>
-                <h3 className="card-title">Hoàn thành mục tiêu mỗi ngày</h3>
-                <p className="card-desc">
-                  Theo dõi ba chỉ số quan trọng: Di chuyển (Đỏ), Luyện tập (Xanh lá) và Đứng (Xanh dương). Hệ thống vòng tròn hoạt động tự động lấp đầy, khích lệ bạn năng động hơn mỗi ngày để đạt cuộc sống khỏe mạnh.
-                </p>
-              </div>
-              
-              <div className="rings-visual-wrapper">
-                <svg className="activity-rings-svg" viewBox="0 0 160 160">
-                  {/* Track backgrounds */}
-                  <circle cx="80" cy="80" r="65" stroke="rgba(250, 17, 79, 0.15)" strokeWidth="12" fill="none" />
-                  <circle cx="80" cy="80" r="50" stroke="rgba(58, 226, 73, 0.15)" strokeWidth="12" fill="none" />
-                  <circle cx="80" cy="80" r="35" stroke="rgba(0, 180, 255, 0.15)" strokeWidth="12" fill="none" />
-                  
-                  {/* Red Ring (Move) - 80% */}
-                  <circle 
-                    cx="80" cy="80" r="65" 
-                    stroke="#fa114f" strokeWidth="12" fill="none" 
-                    strokeLinecap="round"
-                    strokeDasharray="408.4"
-                    strokeDashoffset="81.7"
-                    className="animated-ring ring-red"
-                  />
-                  {/* Green Ring (Exercise) - 65% */}
-                  <circle 
-                    cx="80" cy="80" r="50" 
-                    stroke="#3ae249" strokeWidth="12" fill="none" 
-                    strokeLinecap="round"
-                    strokeDasharray="314.1"
-                    strokeDashoffset="110.0"
-                    className="animated-ring ring-green"
-                  />
-                  {/* Blue Ring (Stand) - 50% */}
-                  <circle 
-                    cx="80" cy="80" r="35" 
-                    stroke="#00b4ff" strokeWidth="12" fill="none" 
-                    strokeLinecap="round"
-                    strokeDasharray="220.0"
-                    strokeDashoffset="110.0"
-                    className="animated-ring ring-blue"
-                  />
-                </svg>
-                <div className="rings-data-legend">
-                  <div className="legend-item"><span className="dot red"></span> Di chuyển: 480/600 Calo</div>
-                  <div className="legend-item"><span className="dot green"></span> Luyện tập: 20/30 Phút</div>
-                  <div className="legend-item"><span className="dot blue"></span> Đứng: 8/12 Giờ</div>
+        {/* Sliding track — shows exactly 3 cards on desktop */}
+        <div className="ft-slider-viewport">
+          <div
+            className="ft-slider-track"
+            style={{
+              transform: `translateX(calc(-${slide + 1} * (var(--card-w) + var(--card-gap))))`,
+              transition: isTransitioning ? 'transform 0.4s cubic-bezier(0.16,1,0.3,1)' : 'none'
+            }}
+          >
+            {loopedSlides.map((s, i) => {
+              const actualIdx = (i - 1 + totalSlides) % totalSlides;
+              const isActive = actualIdx === ((slide + totalSlides) % totalSlides);
+              return (
+                <div key={i} className={`ft-slide-card ${isActive ? 'ft-slide-card--active' : ''}`} onClick={() => { setSlide(actualIdx); resetTimer(); }}>
+                  <div className="ft-slide-img-wrap">
+                    <img src={s.img} alt={s.title} className="ft-slide-img" />
+                  </div>
+                  <div className="ft-slide-body">
+                    <h4 className="ft-slide-title">{s.title}</h4>
+                    <p className="ft-slide-desc">{s.desc}</p>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </BentoCard>
+              );
+            })}
+          </div>
+        </div>
 
-          {/* Card 2: ECG & Nhịp tim (Medium - 1x1) */}
-          <BentoCard className="heart-ecg-card" delay={200}>
-            <div className="card-inner" onClick={() => handleCardClick('Đo điện tâm đồ ECG')}>
-              <div className="card-header-icon text-red">
-                <Heart size={24} />
-              </div>
-              <div className="card-info">
-                <span className="card-tag text-red">Điện tâm đồ</span>
-                <h3 className="card-title">ECG ngay trên cổ tay</h3>
-                <p className="card-desc">
-                  Đo điện tâm đồ ECG bất cứ lúc nào để phát hiện các dấu hiệu bất thường của nhịp tim.
-                </p>
-              </div>
-              
-              <div className="ecg-visual-wrapper">
-                <div className="ecg-wave-line">
-                  <svg viewBox="0 0 120 40" className="wave-svg">
-                    <path d="M0,20 L30,20 L35,10 L40,30 L45,16 L50,22 L55,20 L80,20 L85,5 L90,35 L95,12 L100,24 L105,20 L120,20" fill="none" stroke="#fa114f" strokeWidth="2.5" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <div className="ecg-current-rate">
-                  72 <span>BPM</span>
-                </div>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Card 3: Sleep Matrix (Medium - 1x1) */}
-          <BentoCard className="sleep-matrix-card" delay={300}>
-            <div className="card-inner" onClick={() => handleCardClick('Theo dõi giấc ngủ')}>
-              <div className="card-header-icon text-purple">
-                <Moon size={24} />
-              </div>
-              <div className="card-info">
-                <span className="card-tag text-purple">Giấc ngủ</span>
-                <h3 className="card-title">Thấu hiểu từng giấc ngủ</h3>
-                <p className="card-desc">
-                  Phân tích chi tiết 4 giai đoạn ngủ (REM, Sâu, Nông, Thức) để cải thiện thói quen nghỉ ngơi của bạn.
-                </p>
-              </div>
-              <div className="sleep-score-visual">
-                <div className="sleep-score-box">
-                  <span className="score-number">88</span>
-                  <span className="score-tag">ĐIỂM SỐ</span>
-                </div>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Card 4: GPS Định vị (Medium - 1x1) */}
-          <BentoCard className="gps-navigation-card" delay={400}>
-            <div className="card-inner" onClick={() => handleCardClick('Định vị GPS')}>
-              <div className="card-header-icon text-orange">
-                <Compass size={24} />
-              </div>
-              <div className="card-info">
-                <span className="card-tag text-orange">Định vị GPS</span>
-                <h3 className="card-title">GPS tần số kép chuẩn xác</h3>
-                <p className="card-desc">
-                  Tích hợp anten định vị GPS đa tần số giúp vẽ lại lộ trình chạy bộ hoặc đi bộ chính xác ngay cả trong đô thị đông đúc.
-                </p>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Card 5: Smart Notifications (Medium - 1x1) */}
-          <BentoCard className="smart-notifications-card" delay={500}>
-            <div className="card-inner" onClick={() => handleCardClick('Thông báo thông minh')}>
-              <div className="card-header-icon text-cyan">
-                <Smartphone size={24} />
-              </div>
-              <div className="card-info">
-                <span className="card-tag text-cyan">Kết nối</span>
-                <h3 className="card-title">Kết nối không gián đoạn</h3>
-                <p className="card-desc">
-                  Nhận thông báo, điều khiển nhạc, cuộc gọi và tin nhắn trực tiếp mà không cần chạm điện thoại.
-                </p>
-              </div>
-              <div className="notification-bubble-visual glass-panel">
-                <div className="bubble-sender">✉️ Tin nhắn</div>
-                <div className="bubble-msg">"Hôm nay bạn có lịch tập chạy lúc 18:00 nhé!"</div>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Card 6: Titanium Case & Chống nước (Wide - 2x1) */}
-          <BentoCard className="bento-span-2 durability-card" delay={600}>
-            <div className="card-inner-row" onClick={() => handleCardClick('Độ bền Titanium')}>
-              <div className="card-info-side">
-                <div className="card-header-icon text-gold">
-                  <Shield size={24} />
-                </div>
-                <span className="card-tag text-gold">Độ bền vượt thời gian</span>
-                <h3 className="card-title">Vỏ Titanium & Kháng nước 5ATM</h3>
-                <p className="card-desc">
-                  Khung vỏ chế tác từ chất liệu hợp kim Titanium nguyên khối siêu bền bỉ thường dùng trong hàng không, nhẹ nhàng nhưng chịu lực tốt. Đi kèm khả năng chống nước hoàn hảo ở độ sâu 50m (5ATM), sẵn sàng đồng hành cùng bạn trong mọi điều kiện thời tiết.
-                </p>
-              </div>
-              <div className="durability-visual-side">
-                <div className="durability-badge-circle">Ti</div>
-                <div className="waterproof-badge">💧 50m</div>
-              </div>
-            </div>
-          </BentoCard>
-
-          {/* Card 7: AI Insights Coach (Medium - 1x1) */}
-          <BentoCard className="ai-coach-card" delay={700}>
-            <div className="card-inner" onClick={() => handleCardClick('AI Coaching')}>
-              <div className="card-header-icon text-green">
-                <Sparkles size={20} />
-              </div>
-              <div className="card-info">
-                <span className="card-tag text-green">Huấn luyện AI</span>
-                <h3 className="card-title">Insight y tế cá nhân hóa</h3>
-                <p className="card-desc">
-                  Nhận phân tích và đề xuất luyện tập phù hợp nhất với trạng thái thể lực hiện tại của bạn.
-                </p>
-              </div>
-              <div className="coach-msg-bubble glass-panel">
-                <p>"Thể lực của bạn phục hồi rất tốt (92%). Hôm nay thích hợp cho một bài tập cường độ cao!"</p>
-              </div>
-            </div>
-          </BentoCard>
+        {/* Dot indicators */}
+        <div className="ft-dots">
+          {GALLERY_SLIDES.map((_, i) => {
+            const activeDotIdx = (slide + totalSlides) % totalSlides;
+            return (
+              <button key={i} className={`ft-dot ${i === activeDotIdx ? 'ft-dot--active' : ''}`} onClick={() => { setSlide(i); resetTimer(); }} aria-label={`Slide ${i + 1}`} />
+            );
+          })}
         </div>
       </div>
 
       <style>{`
-        .apple-features-section {
-          padding: 8rem 0;
-          background-color: #000000; /* Apple Deep Black background */
-          color: #ffffff;
-          position: relative;
+        .ft-section { background: #000; padding: 0; }
+
+        .rv { opacity: 0; transform: translateY(36px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+        .rv--on { opacity: 1; transform: none; }
+
+        .ft-tag { font-size: 0.73rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; font-family: var(--font-sans); display: block; margin-bottom: 10px; }
+
+        /* ── INTRO ── */
+        .ft-intro { position: relative; overflow: hidden; background: #000; padding: 96px 2rem 80px; }
+        .ft-intro-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: blur(28px) saturate(0.7); opacity: 0.28; pointer-events: none; transform: scale(1.1); }
+        .ft-intro-bg-overlay { position: absolute; inset: 0; background: radial-gradient(ellipse at 60% 50%, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%); pointer-events: none; }
+        .ft-intro-inner { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; }
+        .ft-intro > .rv { position: relative; z-index: 1; }
+        .ft-intro-heading { font-family: var(--font-sans); font-size: clamp(2.4rem, 5vw, 5rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.08; color: #f5f5f7; margin-bottom: 20px; }
+        .ft-intro-sub { color: rgba(245,245,247,0.4); }
+        .ft-intro-desc { font-size: 1rem; line-height: 1.75; color: rgba(245,245,247,0.55); font-family: var(--font-sans); max-width: 520px; }
+
+        /* ── CARD BASE ── */
+        .ft-card { position: relative; overflow: hidden; }
+        .ft-card-bg { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transition: transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+        .ft-card:hover .ft-card-bg { transform: scale(1.04); }
+        .ft-card-overlay { position: absolute; inset: 0; pointer-events: none; }
+        .ft-card-overlay--right { background: linear-gradient(to left, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.12) 70%, transparent 100%); }
+        .ft-card-content { position: absolute; z-index: 2; }
+        .ft-card-content--right { bottom: 0; right: 0; left: auto; padding: 64px 56px; max-width: 520px; }
+        .ft-card-heading { font-family: var(--font-sans); font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; color: #f5f5f7; margin-bottom: 14px; }
+        .ft-card-desc { font-size: 0.9rem; line-height: 1.7; color: rgba(245,245,247,0.7); font-family: var(--font-sans); }
+        .ft-card--health { height: 900px; }
+
+        /* ── SPOTLIGHT ── */
+        .ft-spotlight { position: relative; overflow: hidden; background: #000; border-top: 1px solid rgba(255,255,255,0.05); }
+        .ft-spotlight-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left center; filter: blur(32px) saturate(0.9); opacity: 0.6; pointer-events: none; transform: scale(1.1); }
+        .ft-spotlight-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 50%, #000 100%); pointer-events: none; }
+        .ft-spotlight-inner { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 120px 2rem 100px; }
+        .ft-spotlight-text { max-width: 680px; margin-bottom: 64px; }
+        .ft-spotlight-heading { font-family: var(--font-sans); font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; color: #f5f5f7; margin-bottom: 20px; }
+        .ft-spotlight-desc { font-size: 0.88rem; line-height: 1.8; color: rgba(245,245,247,0.5); font-family: var(--font-sans); max-width: 600px; }
+
+        /* 3-col */
+        .ft-spotlight-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 48px; }
+        .ft-col-item { display: flex; flex-direction: column; gap: 12px; }
+        .ft-col-icon { display: flex; align-items: center; justify-content: flex-start; height: 36px; margin-bottom: 4px; }
+        .ft-col-title { font-size: 0.84rem; font-weight: 700; color: #f5f5f7; font-family: var(--font-sans); line-height: 1.4; }
+        .ft-col-body { font-size: 0.78rem; line-height: 1.75; color: rgba(245,245,247,0.45); font-family: var(--font-sans); }
+
+        /* ── GALLERY SLIDER ── */
+        .ft-gallery-section { 
+          background: #000; 
+          border-top: 1px solid rgba(255,255,255,0.05); 
+          padding: 80px 0 96px; 
+          overflow: hidden; 
+          --card-gap: 24px;
+          --card-w: calc((100% - 2 * var(--card-gap)) / 3);
+        }
+        .ft-gallery-header { display: flex; align-items: flex-end; justify-content: space-between; max-width: 1280px; margin: 0 auto 40px; padding: 0 2rem; }
+        .ft-gallery-heading { font-family: var(--font-sans); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 700; letter-spacing: -0.025em; color: #f5f5f7; }
+        .ft-gallery-nav { display: flex; gap: 8px; flex-shrink: 0; }
+        .ft-nav-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; color: #f5f5f7; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.18s ease; }
+        .ft-nav-btn:hover { background: rgba(255,255,255,0.22); }
+
+        /* Slider */
+        .ft-slider-viewport { max-width: 1280px; margin: 0 auto; overflow: hidden; padding: 0 2rem; }
+        .ft-slider-track { display: flex; gap: var(--card-gap); }
+        .ft-slide-card { flex: 0 0 var(--card-w); background: transparent; border: none; overflow: hidden; cursor: pointer; transition: transform 0.25s ease; }
+        .ft-slide-card:hover { transform: translateY(-4px); }
+        
+        .ft-slide-img-wrap { 
+          height: 320px; 
+          overflow: hidden; 
+          background: #141414; 
+          border: 1px solid rgba(255,255,255,0.05);
+          border-radius: 24px; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+        }
+        
+        .ft-slide-img { 
+          width: 100%; 
+          height: 100%; 
+          object-fit: cover; 
+          object-position: center; 
+          transition: transform 0.5s ease; 
+        }
+        
+        .ft-slide-card:hover .ft-slide-img { transform: scale(1.04); }
+        .ft-slide-body { padding: 20px 0 12px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+        .ft-slide-title { font-size: 1.4rem; font-weight: 700; color: #f5f5f7; font-family: var(--font-sans); line-height: 1.3; }
+        .ft-slide-desc { font-size: 0.96rem; line-height: 1.7; color: rgba(245,245,247,0.45); font-family: var(--font-sans); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-align: left; }
+
+        /* Dots */
+        .ft-dots { display: flex; justify-content: center; gap: 6px; margin-top: 28px; }
+        .ft-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; padding: 0; }
+        .ft-dot--active { background: #f5f5f7; transform: scale(1.3); }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+          .ft-card--health { height: 480px; }
+          .ft-card-content--right { padding: 36px 28px; max-width: 100%; right: 0; left: 0; }
+          .ft-spotlight-cols { grid-template-columns: 1fr; gap: 32px; }
+          .ft-spotlight-inner { padding: 56px 1.5rem; }
+          .ft-gallery-section { --card-w: calc((100% - 1 * var(--card-gap)) / 2); }
+          .ft-gallery-header { flex-direction: column; align-items: flex-start; gap: 16px; }
         }
 
-        .section-header {
-          text-align: center;
-          margin-bottom: 5rem;
-        }
-
-        .apple-section-title {
-          font-family: var(--font-sans);
-          font-size: clamp(2.5rem, 5vw, 4.2rem);
-          font-weight: 800;
-          line-height: 1.15;
-          letter-spacing: -0.03em;
-          color: #ffffff;
-        }
-
-        .apple-section-title span {
-          background: linear-gradient(135deg, #a1a1a6 0%, #ffffff 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .apple-section-desc {
-          margin-top: 1.5rem;
-          color: #a1a1a6; /* Apple classic gray */
-          max-width: 600px;
-          margin-left: auto;
-          margin-right: auto;
-          font-size: 1.15rem;
-          line-height: 1.6;
-        }
-
-        /* Apple Bento Grid */
-        .apple-bento-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          grid-auto-rows: 320px;
-          gap: 1.25rem;
-        }
-
-        .apple-bento-card {
-          background-color: #1c1c1e; /* Apple System Gray 6 */
-          border-radius: 28px;
-          overflow: hidden;
-          position: relative;
-          cursor: pointer;
-          border: 1px solid rgba(255, 255, 255, 0.02);
-          transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                      background-color 0.3s ease,
-                      box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-          
-          /* Fade-in and slide-up observer */
-          opacity: 0;
-          transform: translateY(35px);
-        }
-
-        .apple-bento-card.visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        .apple-bento-card:hover {
-          transform: translateY(-4px);
-          background-color: #2c2c2e;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .bento-span-2 {
-          grid-column: span 2;
-        }
-
-        .bento-row-span-2 {
-          grid-row: span 2;
-        }
-
-        .card-inner {
-          padding: 2.2rem;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-        }
-
-        .card-inner-row {
-          padding: 2.2rem;
-          height: 100%;
-          display: grid;
-          grid-template-columns: 1.3fr 0.7fr;
-          align-items: center;
-          gap: 2rem;
-        }
-
-        .card-header-icon {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          background-color: rgba(255, 255, 255, 0.04);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 1.2rem;
-        }
-
-        /* Color accents */
-        .text-pink { color: #fa114f; }
-        .text-red { color: #fa114f; }
-        .text-purple { color: #af52de; }
-        .text-orange { color: #ff9500; }
-        .text-cyan { color: #32d7c0; }
-        .text-gold { color: #ffd60a; }
-        .text-green { color: #30d158; }
-
-        .card-info {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .card-tag {
-          font-size: 0.75rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          margin-bottom: 0.5rem;
-        }
-
-        .card-title {
-          font-size: 1.35rem;
-          font-weight: 800;
-          color: #ffffff;
-          letter-spacing: -0.01em;
-          margin-bottom: 0.6rem;
-          line-height: 1.25;
-        }
-
-        .card-desc {
-          font-size: 0.9rem;
-          color: #a1a1a6;
-          line-height: 1.5;
-        }
-
-        /* Activity Rings Visual */
-        .rings-visual-wrapper {
-          display: flex;
-          align-items: center;
-          justify-content: space-around;
-          margin-top: 1.5rem;
-          gap: 2rem;
-          width: 100%;
-        }
-
-        .activity-rings-svg {
-          width: 140px;
-          height: 140px;
-          transform: rotate(-90deg);
-        }
-
-        .animated-ring {
-          transition: stroke-dashoffset 2s ease-out;
-        }
-
-        .rings-data-legend {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          font-size: 0.85rem;
-          font-weight: 600;
-        }
-
-        .legend-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .legend-item .dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-        }
-
-        .dot.red { background-color: #fa114f; }
-        .dot.green { background-color: #3ae249; }
-        .dot.blue { background-color: #00b4ff; }
-
-        /* ECG Visual */
-        .ecg-visual-wrapper {
-          margin-top: 1rem;
-          background-color: rgba(0, 0, 0, 0.2);
-          border-radius: 16px;
-          padding: 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          height: 60px;
-        }
-
-        .ecg-wave-line {
-          flex-grow: 1;
-          display: flex;
-          align-items: center;
-        }
-
-        .wave-svg {
-          height: 35px;
-          width: 100%;
-        }
-
-        .ecg-current-rate {
-          font-size: 1.3rem;
-          font-weight: 800;
-          color: #ffffff;
-          white-space: nowrap;
-          padding-left: 10px;
-        }
-
-        .ecg-current-rate span {
-          font-size: 0.75rem;
-          color: #a1a1a6;
-        }
-
-        /* Sleep visual */
-        .sleep-score-visual {
-          margin-top: 1rem;
-          display: flex;
-          justify-content: center;
-        }
-
-        .sleep-score-box {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          border: 4px solid #af52de;
-          background-color: rgba(175, 82, 222, 0.05);
-        }
-
-        .score-number {
-          font-size: 1.7rem;
-          font-weight: 800;
-          line-height: 1;
-          color: #ffffff;
-        }
-
-        .score-tag {
-          font-size: 0.55rem;
-          color: #a1a1a6;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-        }
-
-        /* Smart Notification Visual */
-        .notification-bubble-visual {
-          margin-top: 1rem;
-          padding: 0.8rem 1rem;
-          border-radius: 14px;
-          background-color: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          font-size: 0.8rem;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .bubble-sender {
-          font-weight: 700;
-          color: #32d7c0;
-        }
-
-        .bubble-msg {
-          color: #e5e5ea;
-        }
-
-        /* Durability visual side */
-        .durability-visual-side {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .durability-badge-circle {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #a1a1a6 0%, #2c2c2e 100%);
-          color: #ffffff;
-          font-weight: 800;
-          font-size: 1.8rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-          border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .waterproof-badge {
-          padding: 4px 12px;
-          border-radius: 30px;
-          background-color: rgba(255, 214, 10, 0.1);
-          color: #ffd60a;
-          font-size: 0.8rem;
-          font-weight: 700;
-        }
-
-        /* AI coach card message */
-        .coach-msg-bubble {
-          margin-top: 1rem;
-          padding: 0.8rem 1rem;
-          border-radius: 14px;
-          background-color: rgba(48, 209, 88, 0.05);
-          border: 1px solid rgba(48, 209, 88, 0.1);
-          font-size: 0.8rem;
-          color: #e5e5ea;
-          line-height: 1.45;
-          font-style: italic;
-        }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-          .apple-bento-grid {
-            grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: auto;
-          }
-
-          .bento-span-2 {
-            grid-column: span 2;
-          }
-
-          .bento-row-span-2 {
-            grid-row: span 1;
-          }
-
-          .rings-visual-wrapper {
-            flex-direction: row;
-            padding: 1rem 0;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .apple-bento-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .bento-span-2 {
-            grid-column: span 1;
-          }
-
-          .card-inner-row {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-          }
-          
-          .durability-visual-side {
-            flex-direction: row;
-            justify-content: space-around;
-            width: 100%;
-          }
-
-          .rings-visual-wrapper {
-            flex-direction: column;
-            gap: 1.5rem;
-          }
+        @media (max-width: 600px) {
+          .ft-intro { padding: 56px 20px 48px; }
+          .ft-card--health { height: 400px; }
+          .ft-card-content--right { padding: 28px 20px; }
+          .ft-spotlight-inner { padding: 48px 20px; }
+          .ft-gallery-section { padding: 56px 0 64px; --card-w: 100%; }
+          .ft-gallery-header { padding: 0 20px; }
+          .ft-slider-viewport { padding: 0 20px; }
         }
       `}</style>
     </section>
