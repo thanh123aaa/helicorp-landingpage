@@ -87,7 +87,7 @@ export const ConnectFeatures: React.FC = () => {
           <ParallaxCard className="cn-card" parallaxSpeed={-0.08}>
             {/* Background watch image */}
             <div className="cn-card-media cn-card-media--contact">
-              <img src="/assets/connect-contact.png" alt="Liên lạc" className="cn-card-img cn-card-img--contact" />
+              <img src="/assets/connect-contact.png" alt="Liên lạc" className="cn-card-img cn-card-img--contact" loading="lazy" />
             </div>
             <div className="cn-card-overlay" />
             
@@ -104,8 +104,8 @@ export const ConnectFeatures: React.FC = () => {
           <ParallaxCard className="cn-card" parallaxSpeed={-0.05} delay={100}>
             {/* Side-by-side watch renders inside card */}
             <div className="cn-card-media cn-card-media--dual">
-              <img src="/assets/watch-silver.webp" alt="Music" className="cn-card-img cn-card-img--dual-left" />
-              <img src="/assets/watch-black.webp" alt="Pay" className="cn-card-img cn-card-img--dual-right" />
+              <img src="/assets/watch-silver.webp" alt="Music" className="cn-card-img cn-card-img--dual-left" loading="lazy" />
+              <img src="/assets/watch-black.webp" alt="Pay" className="cn-card-img cn-card-img--dual-right" loading="lazy" />
             </div>
             <div className="cn-card-overlay" />
             
@@ -120,7 +120,7 @@ export const ConnectFeatures: React.FC = () => {
           {/* CARD 3: Translation */}
           <ParallaxCard className="cn-card" parallaxSpeed={-0.05} delay={150}>
             <div className="cn-card-media cn-card-media--single">
-              <img src="/assets/watch-rose.webp" alt="Dịch trực tiếp" className="cn-card-img cn-card-img--single" />
+              <img src="/assets/watch-rose.webp" alt="Dịch trực tiếp" className="cn-card-img cn-card-img--single" loading="lazy" />
             </div>
             <div className="cn-card-overlay" />
             
@@ -135,7 +135,7 @@ export const ConnectFeatures: React.FC = () => {
           {/* CARD 4: Smart stack */}
           <ParallaxCard className="cn-card" parallaxSpeed={-0.05} delay={200}>
             <div className="cn-card-media cn-card-media--single">
-              <img src="/assets/watch-gold.webp" alt="Smart Stack" className="cn-card-img cn-card-img--single" />
+              <img src="/assets/watch-gold.webp" alt="Smart Stack" className="cn-card-img cn-card-img--single" loading="lazy" />
             </div>
             <div className="cn-card-overlay" />
             
