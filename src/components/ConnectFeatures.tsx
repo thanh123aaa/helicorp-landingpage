@@ -87,7 +87,7 @@ export const ConnectFeatures: React.FC = () => {
           <ParallaxCard className="cn-card" parallaxSpeed={-0.08}>
             {/* Background watch image */}
             <div className="cn-card-media cn-card-media--contact">
-              <img src="/assets/connect-contact.png" alt="Liên lạc" className="cn-card-img cn-card-img--contact" loading="lazy" />
+              <img src="/assets/connect-contact.webp" alt="Liên lạc" className="cn-card-img cn-card-img--contact" loading="lazy" />
             </div>
             <div className="cn-card-overlay" />
             

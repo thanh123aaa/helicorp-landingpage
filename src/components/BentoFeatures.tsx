@@ -21,7 +21,7 @@ const Reveal: React.FC<{ children: React.ReactNode; className?: string; delay?: 
 // Gallery slides data
 const GALLERY_SLIDES = [
   {
-    img: '/assets/feature-sleep.png',
+    img: '/assets/feature-sleep.webp',
     color: '#bf5af2',
     icon: <Moon size={15} />,
     title: 'Theo dõi giấc ngủ',
@@ -110,7 +110,7 @@ export const BentoFeatures: React.FC = () => {
 
       {/* ── Intro heading with ambient bg ── */}
       <div className="ft-intro">
-        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.jpg" alt="" aria-hidden="true" className="ft-intro-bg" loading="lazy" />
+        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.webp" alt="" aria-hidden="true" className="ft-intro-bg" loading="lazy" />
         <div className="ft-intro-bg-overlay" />
         <Reveal>
           <div className="ft-intro-inner">
@@ -128,7 +128,7 @@ export const BentoFeatures: React.FC = () => {
 
       {/* ── CARD 1: Health lifestyle — text ON image ── */}
       <Reveal className="ft-card ft-card--health">
-        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.jpg" alt="Sức khỏe" className="ft-card-bg" loading="lazy" />
+        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.webp" alt="Sức khỏe" className="ft-card-bg" loading="lazy" />
         <div className="ft-card-overlay ft-card-overlay--right" />
         <div className="ft-card-content ft-card-content--right">
           <Reveal delay={150}>
@@ -146,7 +146,7 @@ export const BentoFeatures: React.FC = () => {
       {/* ── SPOTLIGHT: Huyết áp — ảnh mờ phía sau ── */}
       <div className="ft-spotlight">
         {/* Ảnh nền mờ */}
-        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.jpg" alt="" aria-hidden="true" className="ft-spotlight-bg" loading="lazy" />
+        <img src="/assets/health_hero__bs99gittogoi_xlarge_2x.webp" alt="" aria-hidden="true" className="ft-spotlight-bg" loading="lazy" />
         <div className="ft-spotlight-overlay" />
 
         <div className="ft-spotlight-inner">

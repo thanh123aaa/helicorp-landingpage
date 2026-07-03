@@ -37,18 +37,18 @@ export const getCustomWatchImage = (colorId: string, strapId: string): string =>
   const images: Record<string, Record<string, string>> = {
     black: {
       silicon: '/assets/watch-black.webp',
-      leather: '/assets/fit-rings-light.png',
-      titanium: '/assets/fit-chart-light.png'
+      leather: '/assets/fit-rings-light.webp',
+      titanium: '/assets/fit-chart-light.webp'
     },
     silver: {
       silicon: '/assets/watch-silver.webp',
       leather: '/assets/Theodoinhiptho.jpg',
-      titanium: '/assets/fit-dual-light.png'
+      titanium: '/assets/fit-dual-light.webp'
     },
     gold: {
       silicon: '/assets/watch-gold.webp',
       leather: '/assets/Ungdungsinhhieu.jpg',
-      titanium: '/assets/fit-yellow-light.png'
+      titanium: '/assets/fit-yellow-light.webp'
     },
     rose: {
       silicon: '/assets/watch-rose.webp',

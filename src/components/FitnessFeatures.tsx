@@ -74,10 +74,10 @@ export const FitnessFeatures: React.FC = () => {
 
   // Dynamic asset paths based on theme
   const images = {
-    rings: isDark ? '/assets/fit-rings-dark.png' : '/assets/fit-rings-light.png',
-    dual: isDark ? '/assets/fit-dual-dark.png' : '/assets/fit-dual-light.png',
-    yellow: isDark ? '/assets/fit-yellow-dark.png' : '/assets/fit-yellow-light.png',
-    chart: isDark ? '/assets/fit-chart-dark.png' : '/assets/fit-chart-light.png'
+    rings: isDark ? '/assets/fit-rings-dark.webp' : '/assets/fit-rings-light.webp',
+    dual: isDark ? '/assets/fit-dual-dark.webp' : '/assets/fit-dual-light.webp',
+    yellow: isDark ? '/assets/fit-yellow-dark.webp' : '/assets/fit-yellow-light.webp',
+    chart: isDark ? '/assets/fit-chart-dark.webp' : '/assets/fit-chart-light.webp'
   };
 
   return (
