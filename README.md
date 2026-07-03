@@ -1,28 +1,28 @@
-# HELICORP IT INTERN WEBSITE - LANDING PAGE HELIORING
+# HELICORP IT INTERN WEBSITE - LANDING PAGE HELIOWATCH GEN 3
 
-Dự án thiết kế **Landing Page HelioRing** cao cấp giới thiệu nhẫn sức khỏe thông minh thế hệ mới, được thực hiện phục vụ cho bài kiểm tra đánh giá năng lực **Vòng 2 - Thực tập sinh IT Phát triển Website** của **Healthy Living Corporation (Helicorp)**.
+Dự án thiết kế **Landing Page HelioWatch Gen 3** cao cấp giới thiệu đồng hồ thông minh sức khỏe Titanium thế hệ mới, được thực hiện phục vụ cho bài kiểm tra đánh giá năng lực **Vòng 2 - Thực tập sinh IT Phát triển Website** của **Healthy Living Corporation (Helicorp)**.
 
 *   **Ứng viên**: Thực tập sinh IT Phát triển Website
-*   **Sản phẩm giới thiệu**: HelioRing Gen 3 (Nhẫn Sức khỏe Thông minh)
+*   **Sản phẩm giới thiệu**: HelioWatch Gen 3 (Đồng hồ Thông minh Sức khỏe Cao cấp)
 *   **Hạn nộp**: Trước 18:00 ngày 04/07/2026
 
 ---
 
 ## 🚀 Tính Năng Nổi Bật (Features Checklist)
 
-Dự án không chỉ đáp ứng trọn vẹn các yêu cầu cơ bản mà còn tích hợp toàn bộ các phần điểm cộng nâng cao nhằm chứng minh năng lực kỹ thuật:
+Dự án tích hợp đầy đủ các tính năng cơ bản và nâng cao nhằm đáp ứng các tiêu chuẩn kỹ thuật hiện đại và mang lại trải nghiệm tối ưu cho người dùng:
 
 ### 1. Thẩm Mỹ & Trải Nghiệm Người Dùng (UI/UX)
 *   **Modern Design**: Thiết kế bám sát phong cách công nghệ cao cấp (Premium Luxury Tech) với tông màu tối mượt mà (Dark Mode) và giao diện sáng thanh lịch (Light Mode).
 *   **Theme Toggle**: Khả năng chuyển đổi giao diện Dark/Light mượt mà, ghi nhớ tùy chọn người dùng qua `localStorage` và tự động nhận diện thiết lập hệ thống.
 *   **Bento Grid Layout**: Trình bày tính năng theo cấu trúc lưới Bento thời thượng kết hợp hiệu ứng trượt vào (Intersection Observer) sống động.
-*   **Micro-interactions**: Parallax di chuyển chuột trên Hero section, cảm biến nhịp tim nhấp nháy, biểu đồ giấc ngủ tương tác, và hiệu ứng vòng tròn cự chỉ thông minh.
+*   **Micro-interactions**: Parallax di chuyển chuột trên Hero section, cảm biến nhịp tim nhấp nháy, biểu đồ giấc ngủ tương tác, và hiệu ứng chuyển động mượt mà.
 
 ### 2. Mini E-commerce (Thương Mại Điện Tử Thu Nhỏ)
-*   **Product Customizer**: Cho phép người dùng tùy chọn màu sắc (Space Gray, Stellar Silver, Royal Gold, Rose Quartz) và kích cỡ nhẫn (US Size 6 - 13) kèm bảng hướng dẫn đo size trực quan. Hình ảnh nhẫn cập nhật tự động theo màu đang chọn.
+*   **Product Customizer**: Cho phép người dùng tùy chọn màu sắc (Space Gray, Stellar Silver, Royal Gold, Rose Quartz), dây đeo và kích cỡ vỏ (41mm - 45mm) kèm bảng hướng dẫn đo size trực quan. Hình ảnh đồng hồ cập nhật tự động theo màu và dây đeo đang chọn.
 *   **Shopping Cart (Giỏ hàng)**: Slide-out drawer bên phải quản lý thêm/sửa số lượng/xóa sản phẩm, tự động tính tổng tiền.
-*   **Wishlist (Yêu thích)**: Lưu trữ các cấu hình nhẫn yêu thích và dễ dàng chuyển đổi nhanh vào giỏ hàng.
-*   **Recently Viewed (Sản phẩm đã xem)**: Lưu lại danh sách các màu nhẫn người dùng vừa bấm xem qua.
+*   **Wishlist (Yêu thích)**: Lưu trữ các cấu hình đồng hồ yêu thích và dễ dàng chuyển đổi nhanh vào giỏ hàng.
+*   **Recently Viewed (Sản phẩm đã xem)**: Lưu lại danh sách các phiên bản màu đồng hồ người dùng vừa bấm xem qua.
 *   **Persistence**: Đồng bộ giỏ hàng, danh sách yêu thích và lịch sử xem tức thì với `localStorage` để giữ nguyên trạng thái khi tải lại trang (F5).
 
 ### 3. Đăng Ký Nhận Tin & Kết Nối Webhook
@@ -32,12 +32,12 @@ Dự án không chỉ đáp ứng trọn vẹn các yêu cầu cơ bản mà cò
 *   **Skeleton Loading & Toast**: Hiệu ứng spinner khi gửi form kết hợp Toast thông báo kết quả.
 
 ### 4. Theo Dõi Hành Vi (User Behavior Tracking)
-*   **Tracking Hook (`useTracking`)**: Tự động bắt và ghi nhận các sự kiện: Click nút CTA, Thêm sản phẩm vào giỏ, Thay đổi màu sắc/size nhẫn, Gửi form và cuộn trang theo các mốc độ sâu (25%, 50%, 75%, 100%).
+*   **Tracking Hook (`useTracking`)**: Tự động bắt và ghi nhận các sự kiện: Click nút CTA, Thêm sản phẩm vào giỏ, Thay đổi màu sắc/size vỏ, Gửi form và cuộn trang theo các mốc độ sâu (25%, 50%, 75%, 100%).
 *   **Developer Console Panel**: Một cửa sổ console nhỏ ở góc dưới hiển thị danh sách các sự kiện tương tác đang được ghi nhận thời gian thực để nhà tuyển dụng tiện theo dõi.
 *   **Social Proof Popups**: Hiển thị ngẫu nhiên các thông báo đơn hàng giả lập góc màn hình tạo độ nhộn nhịp cho website thương hiệu.
 
 ### 5. Chatbot Tư Vấn Thông Minh (AI Chatbot)
-*   **Interactive Assistant (HelioAI)**: Widget chat ở góc dưới màn hình hỗ trợ trả lời tự động thông minh bằng tiếng Việt với các từ khóa liên quan đến sản phẩm (Pin, kích cỡ, chất liệu, tính năng sức khỏe, giá bán, giao hàng, bảo hành).
+*   **Interactive Assistant (Helio AI)**: Widget chat ở góc dưới màn hình hỗ trợ trả lời tự động thông minh bằng tiếng Việt với các từ khóa liên quan đến sản phẩm (Pin, kích cỡ, chất liệu, tính năng sức khỏe, giá bán, giao hàng, bảo hành).
 *   **Gemini API Integration**: Hỗ trợ ô cấu hình API Key của Google Gemini trong phần cài đặt chatbot. Khi nhập key hợp lệ, chatbot sẽ trực tiếp trò chuyện bằng trí tuệ nhân tạo Gemini AI thực tế để tư vấn sản phẩm cho khách hàng.
 
 ---
@@ -47,7 +47,7 @@ Dự án không chỉ đáp ứng trọn vẹn các yêu cầu cơ bản mà cò
 *   **Frontend core**: React 18, TypeScript, Vite.
 *   **Styling**: Pure CSS (Vanilla CSS). Việc sử dụng CSS Variables và thiết kế gọn nhẹ giúp trang web đạt hiệu năng PageSpeed tối đa, không bị phình dung lượng bundle (Bundle CSS chỉ vỏn vẹn **5.2 KB**).
 *   **Icons**: Lucide React.
-*   **State Management**: Context API (ShopContext, ThemeContext, ToastContext).
+*   **State Management**: Context API (ShopContext, ThemeContext, ToastContext, TrackingContext).
 
 ---
 
@@ -72,8 +72,8 @@ Dự án không chỉ đáp ứng trọn vẹn các yêu cầu cơ bản mà cò
 
 1.  **Clone repository từ GitHub**:
     ```bash
-    git clone https://github.com/your-username/helicorp-intern-landingpage.git
-    cd helicorp-intern-landingpage
+    git clone https://github.com/thanh123aaa/helicorp-landingpage.git
+    cd helicorp-landingpage
     ```
 
 2.  **Cài đặt các gói phụ thuộc (Dependencies)**:
@@ -97,4 +97,4 @@ Dự án không chỉ đáp ứng trọn vẹn các yêu cầu cơ bản mà cò
 ## 🌐 Triển khai thực tế (Deployment)
 
 Dự án được deploy tự động lên **Vercel** thông qua việc liên kết trực tiếp với GitHub. Mọi thay đổi ở nhánh `main` sẽ được tự động build và cập nhật trực tiếp trên Vercel.
-*   **Link Deploy**: *[Sẽ được bổ sung sau khi đẩy lên GitHub]*
+*   **Link Deploy**: *https://helicorp-landingpage.vercel.app/*
