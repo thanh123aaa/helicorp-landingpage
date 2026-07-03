@@ -1,9 +1,6 @@
-import { useCallback } from 'react';
+import { useTrackingContext } from '../context/TrackingContext';
 
 export const useTracking = () => {
-  const trackEvent = useCallback((action: string, category: string, label?: string) => {
-    console.log(`[Tracking Mock] Action: ${action}, Category: ${category}, Label: ${label}`);
-  }, []);
-
+  const { trackEvent } = useTrackingContext();
   return { trackEvent };
 };

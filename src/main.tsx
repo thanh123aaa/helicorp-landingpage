@@ -5,14 +5,17 @@ import './index.css';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { ShopProvider } from './context/ShopContext';
+import { TrackingProvider } from './context/TrackingContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
       <ToastProvider>
-        <ShopProvider>
-          <App />
-        </ShopProvider>
+        <TrackingProvider>
+          <ShopProvider>
+            <App />
+          </ShopProvider>
+        </TrackingProvider>
       </ToastProvider>
     </ThemeProvider>
   </React.StrictMode>

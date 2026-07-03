@@ -60,7 +60,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Phone size={16} className="contact-icon" />
-                <a href="tel:02836222622">028.3622.2622</a>
+                <a href="tel:02836222622">028.123.4567</a>
               </li>
             </ul>
           </div>
@@ -71,7 +71,7 @@ export const Footer: React.FC = () => {
             &copy; {currentYear} HelioRing & Helicorp. All rights reserved.
           </p>
           <div className="test-disclaimer">
-            <span>Dự án phục vụ kiểm tra năng lực Vòng 2 - Thực tập sinh IT Phát triển Website.</span>
+            <span></span>
           </div>
         </div>
       </div>

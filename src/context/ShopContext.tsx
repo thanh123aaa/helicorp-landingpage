@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface CartItem {
-  id: string; // combination of color + size
+  id: string; // combination of color + size + strap
   name: string;
   color: string;
   colorName: string;
@@ -9,16 +9,20 @@ export interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  strap: string;
+  strapName: string;
 }
 
 export interface WishlistItem {
-  id: string; // combination of color + size
+  id: string; // combination of color + size + strap
   name: string;
   color: string;
   colorName: string;
   size: number;
   price: number;
   image: string;
+  strap: string;
+  strapName: string;
 }
 
 export interface ProductColor {
@@ -28,15 +32,51 @@ export interface ProductColor {
   image: string;
 }
 
+// Bảng ánh xạ ảnh đồng hồ tương ứng với từng loại Dây đeo và Màu vỏ Titan
+export const getCustomWatchImage = (colorId: string, strapId: string): string => {
+  const images: Record<string, Record<string, string>> = {
+    black: {
+      silicon: '/assets/watch-black.webp',
+      leather: '/assets/fit-rings-light.png',
+      titanium: '/assets/fit-chart-light.png'
+    },
+    silver: {
+      silicon: '/assets/watch-silver.webp',
+      leather: '/assets/Theodoinhiptho.jpg',
+      titanium: '/assets/fit-dual-light.png'
+    },
+    gold: {
+      silicon: '/assets/watch-gold.webp',
+      leather: '/assets/Ungdungsinhhieu.jpg',
+      titanium: '/assets/fit-yellow-light.png'
+    },
+    rose: {
+      silicon: '/assets/watch-rose.webp',
+      leather: '/assets/Theosattraitim.jpg',
+      titanium: '/assets/watch-rose.webp'
+    }
+  };
+  return images[colorId]?.[strapId] || images[colorId]?.silicon || '/assets/watch-black.webp';
+};
+
+export const getStrapName = (strapId: string): string => {
+  const names: Record<string, string> = {
+    silicon: 'Silicon Thể Thao',
+    leather: 'Da Ý Lịch Lãm',
+    titanium: 'Titanium Bản Thép'
+  };
+  return names[strapId] || 'Silicon Thể Thao';
+};
+
 interface ShopContextType {
   cart: CartItem[];
   wishlist: WishlistItem[];
   recentlyViewed: string[]; // array of color IDs
-  addToCart: (colorId: string, size: number, quantity: number) => void;
+  addToCart: (colorId: string, size: number, quantity: number, strap?: string) => void;
   removeFromCart: (itemId: string) => void;
   updateCartQuantity: (itemId: string, quantity: number) => void;
-  toggleWishlist: (colorId: string, size: number) => void;
-  isInWishlist: (colorId: string, size: number) => boolean;
+  toggleWishlist: (colorId: string, size: number, strap?: string) => void;
+  isInWishlist: (colorId: string, size: number, strap?: string) => boolean;
   addToRecentlyViewed: (colorId: string) => void;
   clearCart: () => void;
 }
@@ -83,9 +123,10 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('heliowatch_recent', JSON.stringify(recentlyViewed));
   }, [recentlyViewed]);
 
-  const addToCart = (colorId: string, size: number, quantity: number) => {
+  const addToCart = (colorId: string, size: number, quantity: number, strap = 'silicon') => {
     const colorObj = productColors.find(c => c.id === colorId) || productColors[0];
-    const itemId = `${colorId}-${size}`;
+    const itemId = `${colorId}-${size}-${strap}`;
+    const customImage = getCustomWatchImage(colorId, strap);
 
     setCart(prev => {
       const existing = prev.find(item => item.id === itemId);
@@ -104,7 +145,9 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
         size,
         price: PRODUCT_PRICE,
         quantity,
-        image: colorObj.image
+        image: customImage,
+        strap,
+        strapName: getStrapName(strap)
       }];
     });
   };
@@ -123,9 +166,10 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     ));
   };
 
-  const toggleWishlist = (colorId: string, size: number) => {
+  const toggleWishlist = (colorId: string, size: number, strap = 'silicon') => {
     const colorObj = productColors.find(c => c.id === colorId) || productColors[0];
-    const itemId = `${colorId}-${size}`;
+    const itemId = `${colorId}-${size}-${strap}`;
+    const customImage = getCustomWatchImage(colorId, strap);
 
     setWishlist(prev => {
       const existing = prev.find(item => item.id === itemId);
@@ -139,13 +183,15 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
         colorName: colorObj.name,
         size,
         price: PRODUCT_PRICE,
-        image: colorObj.image
+        image: customImage,
+        strap,
+        strapName: getStrapName(strap)
       }];
     });
   };
 
-  const isInWishlist = (colorId: string, size: number) => {
-    const itemId = `${colorId}-${size}`;
+  const isInWishlist = (colorId: string, size: number, strap = 'silicon') => {
+    const itemId = `${colorId}-${size}-${strap}`;
     return wishlist.some(item => item.id === itemId);
   };
 
