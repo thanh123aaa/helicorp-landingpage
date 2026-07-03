@@ -74,10 +74,10 @@ export const FitnessFeatures: React.FC = () => {
 
   // Dynamic asset paths based on theme
   const images = {
-    rings: isDark ? '/assets/fit-rings-dark.png' : '/assets/fit-rings-light.png',
-    dual: isDark ? '/assets/fit-dual-dark.png' : '/assets/fit-dual-light.png',
-    yellow: isDark ? '/assets/fit-yellow-dark.png' : '/assets/fit-yellow-light.png',
-    chart: isDark ? '/assets/fit-chart-dark.png' : '/assets/fit-chart-light.png'
+    rings: isDark ? '/assets/fit-rings-dark.webp' : '/assets/fit-rings-light.webp',
+    dual: isDark ? '/assets/fit-dual-dark.webp' : '/assets/fit-dual-light.webp',
+    yellow: isDark ? '/assets/fit-yellow-dark.webp' : '/assets/fit-yellow-light.webp',
+    chart: isDark ? '/assets/fit-chart-dark.webp' : '/assets/fit-chart-light.webp'
   };
 
   return (
@@ -91,7 +91,7 @@ export const FitnessFeatures: React.FC = () => {
 
         {/* ── CARD 1: Large Row (Rings) ── */}
         <ParallaxCard className="fn-card fn-card--large" parallaxSpeed={-0.08}>
-          <img src={images.rings} alt="" className="fn-card-bg fn-card-bg--rings" />
+          <img src={images.rings} alt="" className="fn-card-bg fn-card-bg--rings" loading="lazy" />
           <div className="fn-card-overlay fn-card-overlay--large" />
           
           <div className="fn-card-content">
@@ -110,7 +110,7 @@ export const FitnessFeatures: React.FC = () => {
           
           {/* Card Left */}
           <ParallaxCard className="fn-card fn-card--small" parallaxSpeed={-0.05} delay={100}>
-            <img src={images.dual} alt="" className="fn-card-bg fn-card-bg--bottom" />
+            <img src={images.dual} alt="" className="fn-card-bg fn-card-bg--bottom" loading="lazy" />
             <div className="fn-card-overlay fn-card-overlay--small" />
             
             <div className="fn-card-content">
@@ -123,7 +123,7 @@ export const FitnessFeatures: React.FC = () => {
 
           {/* Card Right */}
           <ParallaxCard className="fn-card fn-card--small" parallaxSpeed={-0.05} delay={200}>
-            <img src={images.yellow} alt="" className="fn-card-bg fn-card-bg--bottom" />
+            <img src={images.yellow} alt="" className="fn-card-bg fn-card-bg--bottom" loading="lazy" />
             <div className="fn-card-overlay fn-card-overlay--small" />
             
             <div className="fn-card-content">
@@ -137,7 +137,7 @@ export const FitnessFeatures: React.FC = () => {
 
         {/* ── CARD 4: Large Row (Chart) ── */}
         <ParallaxCard className="fn-card fn-card--large" parallaxSpeed={-0.08}>
-          <img src={images.chart} alt="" className="fn-card-bg fn-card-bg--chart" />
+          <img src={images.chart} alt="" className="fn-card-bg fn-card-bg--chart" loading="lazy" />
           <div className="fn-card-overlay fn-card-overlay--large" />
           
           <div className="fn-card-content">
