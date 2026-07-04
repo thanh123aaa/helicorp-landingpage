@@ -182,7 +182,7 @@ export const NewsletterSubscription: React.FC = () => {
         }
 
         .sub-glass-card {
-          background: var(--surface-secondary);
+          background-color: var(--bg-secondary);
           border-radius: 36px;
           padding: 60px;
           border: 1px solid var(--border-color);
