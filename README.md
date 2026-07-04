@@ -1,10 +1,6 @@
-# HELICORP IT INTERN WEBSITE - LANDING PAGE HELIOWATCH GEN 3
+# LANDING PAGE HELIOWATCH GEN 3
 
-Dự án thiết kế **Landing Page HelioWatch Gen 3** cao cấp giới thiệu đồng hồ thông minh sức khỏe Titanium thế hệ mới, được thực hiện phục vụ cho bài kiểm tra đánh giá năng lực **Vòng 2 - Thực tập sinh IT Phát triển Website** của **Healthy Living Corporation (Helicorp)**.
-
-*   **Ứng viên**: Thực tập sinh IT Phát triển Website
-*   **Sản phẩm giới thiệu**: HelioWatch Gen 3 (Đồng hồ Thông minh Sức khỏe Cao cấp)
-*   **Hạn nộp**: Trước 18:00 ngày 04/07/2026
+Dự án thiết kế **Landing Page HelioWatch Gen 3** cao cấp giới thiệu đồng hồ thông minh sức khỏe Titanium thế hệ mới từ **Healthy Living Corporation (Helicorp)**.
 
 ---
 
@@ -97,4 +93,4 @@ Dự án tích hợp đầy đủ các tính năng cơ bản và nâng cao nhằ
 ## 🌐 Triển khai thực tế (Deployment)
 
 Dự án được deploy tự động lên **Vercel** thông qua việc liên kết trực tiếp với GitHub. Mọi thay đổi ở nhánh `main` sẽ được tự động build và cập nhật trực tiếp trên Vercel.
-*   **Link Deploy**: *https://helicorp-landingpage.vercel.app/*
+*   **Link Deploy**: *https://helicorp-landingpage-tau.vercel.app/*
