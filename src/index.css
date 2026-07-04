@@ -36,18 +36,18 @@
 
 /* Dark Theme Overrides */
 [data-theme='dark'] {
-  --bg-primary: #07080a;
-  --bg-secondary: #0e1116;
-  --surface-primary: #12161f;
-  --surface-secondary: #1b202e;
+  --bg-primary: #08080a;
+  --bg-secondary: #121214;
+  --surface-primary: #18181c;
+  --surface-secondary: #222226;
   --text-primary: #f3f4f6;
   --text-secondary: #9ca3af;
   --text-tertiary: #6b7280;
   --accent-color: #60a5fa; /* Blue accent for dark mode */
   --accent-glow: rgba(96, 165, 250, 0.15);
   
-  --border-color: #1f2937;
-  --glass-bg: rgba(18, 22, 31, 0.85);
+  --border-color: #222226;
+  --glass-bg: rgba(24, 24, 28, 0.85);
   --glass-border: rgba(255, 255, 255, 0.05);
   --glass-shadow: rgba(0, 0, 0, 0.5) 0px 12px 40px;
 }
