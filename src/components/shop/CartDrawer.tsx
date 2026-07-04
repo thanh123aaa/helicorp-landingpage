@@ -1,6 +1,6 @@
 import React from 'react';
-import { useShop } from '../context/ShopContext';
-import { useToast } from '../context/ToastContext';
+import { useShop } from '../../context/ShopContext';
+import { useToast } from '../../context/ToastContext';
 import { X, Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 
 interface CartDrawerProps {
@@ -23,16 +23,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className={`drawer-backdrop ${isOpen ? 'is-open' : ''}`}
         onClick={onClose}
       />
 
-      {/* Drawer */}
       <div className={`drawer-container ${isOpen ? 'is-open' : ''}`}>
-
-        {/* Header */}
         <div className="drawer-header">
           <h2 className="drawer-title">Giỏ hàng ({cart.reduce((sum, item) => sum + item.quantity, 0)})</h2>
           <button onClick={onClose} className="drawer-close-btn" aria-label="Đóng giỏ hàng">
@@ -40,7 +36,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Cart Items */}
         <div className="drawer-body custom-drawer-scrollbar">
           {cart.length === 0 ? (
             <div className="drawer-empty-state">
@@ -54,12 +49,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
             <div className="cart-items-list">
               {cart.map((item) => (
                 <div key={item.id} className="cart-item-row">
-                  {/* Image container */}
                   <div className="item-image-wrapper">
                     <img src={item.image} alt={item.name} className="item-image" />
                   </div>
 
-                  {/* Details container */}
                   <div className="item-details-wrapper">
                     <div className="item-header-row">
                       <div className="item-title-col">
@@ -78,7 +71,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                     </div>
 
                     <div className="item-bottom-row">
-                      {/* Quantity Selector - Minimal Square Grid Style */}
                       <div className="quantity-grid-selector">
                         <button
                           onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
@@ -96,7 +88,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                         </button>
                       </div>
 
-                      {/* Price */}
                       <span className="item-price-text">
                         {(item.price * item.quantity).toLocaleString('vi-VN')}đ
                       </span>
@@ -108,7 +99,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Footer */}
         {cart.length > 0 && (
           <div className="drawer-footer">
             <div className="billing-breakdown">
@@ -137,7 +127,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
       </div>
 
       <style>{`
-        /* ── MINIMALIST HUMAN-DESIGNED DRAWER STYLES ── */
         .drawer-backdrop {
           position: fixed;
           inset: 0;
@@ -179,7 +168,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           transform: translateX(0);
         }
 
-        /* ── HEADER ── */
         .drawer-header {
           display: flex;
           align-items: center;
@@ -212,14 +200,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           color: var(--text-primary);
         }
 
-        /* ── BODY ── */
         .drawer-body {
           flex-grow: 1;
           overflow-y: auto;
           padding: 0 28px;
         }
 
-        /* Scrollbar */
         .custom-drawer-scrollbar::-webkit-scrollbar {
           width: 4px;
         }
@@ -231,7 +217,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           border-radius: 4px;
         }
 
-        /* Empty State */
         .drawer-empty-state {
           height: 100%;
           display: flex;
@@ -261,7 +246,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           padding: 4px 8px;
         }
 
-        /* ── CART ITEMS LIST ── */
         .cart-items-list {
           display: flex;
           flex-direction: column;
@@ -356,7 +340,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           margin-top: 12px;
         }
 
-        /* Quantity Selector - Minimal Square Border Box */
         .quantity-grid-selector {
           display: flex;
           align-items: center;
@@ -411,7 +394,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
           color: var(--text-primary);
         }
 
-        /* ── FOOTER ── */
         .drawer-footer {
           padding: 24px 28px;
           border-top: 1px solid var(--border-color);

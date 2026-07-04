@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../context/ThemeContext';
-import { useShop } from '../context/ShopContext';
+import { useTheme } from '../../context/ThemeContext';
+import { useShop } from '../../context/ShopContext';
 import { Sun, Moon, ShoppingCart, Heart, Menu, X } from 'lucide-react';
 
 interface HeaderProps {
@@ -18,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick }) 
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
       
-      const scrollPosition = window.scrollY + 140; // 140px offset for header height
+      const scrollPosition = window.scrollY + 140; // Offset for header height
       const sections = ['hero', 'features', 'customizer', 'specs', 'newsletter'];
       
       let currentSection = 'hero';
@@ -36,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick }) 
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // Run immediately on mount
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -155,7 +155,6 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick }) 
           z-index: 1000;
           display: flex;
           align-items: center;
-          /* Trong suốt khi ở đầu trang */
           background-color: transparent;
           border-bottom: 1px solid transparent;
           backdrop-filter: none;
@@ -163,7 +162,6 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick }) 
           transition: background-color 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease;
         }
 
-        /* Khi scroll xuống → hiện nền glass mờ */
         .header--scrolled {
           background-color: var(--glass-bg);
           border-bottom: 1px solid var(--glass-border);
@@ -310,24 +308,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick }) 
           display: flex;
           align-items: center;
           justify-content: center;
-        }
-
-        .dev-toggle-btn {
-          width: auto;
-          height: 40px;
-          padding: 0 12px;
-          border-radius: 20px;
-          display: flex;
-          gap: 6px;
-          border: 1px dashed var(--border-color);
-        }
-
-        .dev-badge {
-          font-size: 0.75rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
+          }
 
         .mobile-menu-btn {
           display: none;
@@ -367,19 +348,8 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick }) 
           .mobile-menu-btn {
             display: flex;
           }
-          
-          .dev-badge {
-            display: none;
-          }
-          
-          .dev-toggle-btn {
-            width: 40px;
-            padding: 0;
-            border-radius: 50%;
-          }
         }
 
-        /* ── MICRO BOUNCE ANIMATIONS ── */
         .micro-bounce-cart {
           animation: cartBounce 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }

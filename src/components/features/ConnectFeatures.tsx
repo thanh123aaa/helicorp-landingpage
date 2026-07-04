@@ -1,37 +1,28 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { useTheme } from '../context/ThemeContext';
+import React, { useRef, useEffect } from 'react';
+import { useTheme } from '../../context/ThemeContext';
+import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { Reveal } from '../common/Reveal';
 
-// Scroll reveal (chạy động cả lúc vào và ra khỏi màn hình)
-const useReveal = (threshold = 0.1) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current; if (!el) return;
-    const obs = new IntersectionObserver(([e]) => {
-      setVisible(e.isIntersecting);
-    }, { threshold, rootMargin: '-40px 0px -40px 0px' });
-    obs.observe(el); return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-};
-
-const Reveal: React.FC<{ children: React.ReactNode; className?: string; delay?: number }> = ({ children, className = '', delay = 0 }) => {
-  const { ref, visible } = useReveal();
-  return <div ref={ref} className={`rv ${className} ${visible ? 'rv--on' : ''}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
-};
-
-// ParallaxCard: Tích hợp Reveal & Parallax
-const ParallaxCard: React.FC<{
+interface ParallaxCardProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
   parallaxSpeed?: number;
-}> = ({ children, className = '', delay = 0, parallaxSpeed = -0.06 }) => {
-  const { ref: revealRef, visible } = useReveal();
+}
+
+const ParallaxCard: React.FC<ParallaxCardProps> = ({
+  children,
+  className = '',
+  delay = 0,
+  parallaxSpeed = -0.06
+}) => {
+  const { ref: revealRef, visible } = useScrollReveal();
   const parallaxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = parallaxRef.current; if (!el) return;
+    const el = parallaxRef.current;
+    if (!el) return;
+
     const handleScroll = () => {
       const rect = el.getBoundingClientRect();
       const viewHeight = window.innerHeight;
@@ -44,6 +35,7 @@ const ParallaxCard: React.FC<{
         });
       }
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
@@ -74,18 +66,12 @@ export const ConnectFeatures: React.FC = () => {
   return (
     <section id="connectivity" className="cn-section">
       <div className="container">
-        
-        {/* Main Title */}
         <Reveal>
           <h2 className="cn-main-title">Kết Nối</h2>
         </Reveal>
 
-        {/* ── 2x2 Grid of Cards ── */}
         <div className="cn-grid">
-          
-          {/* CARD 1: Keep in touch */}
           <ParallaxCard className="cn-card" parallaxSpeed={-0.08}>
-            {/* Background watch image */}
             <div className="cn-card-media cn-card-media--contact">
               <img src="/assets/connect-contact.webp" alt="Liên lạc" className="cn-card-img cn-card-img--contact" loading="lazy" />
             </div>
@@ -100,9 +86,7 @@ export const ConnectFeatures: React.FC = () => {
             </div>
           </ParallaxCard>
 
-          {/* CARD 2: Music & Pay */}
           <ParallaxCard className="cn-card" parallaxSpeed={-0.05} delay={100}>
-            {/* Side-by-side watch renders inside card */}
             <div className="cn-card-media cn-card-media--dual">
               <img src="/assets/watch-silver.webp" alt="Music" className="cn-card-img cn-card-img--dual-left" loading="lazy" />
               <img src="/assets/watch-black.webp" alt="Pay" className="cn-card-img cn-card-img--dual-right" loading="lazy" />
@@ -117,7 +101,6 @@ export const ConnectFeatures: React.FC = () => {
             </div>
           </ParallaxCard>
 
-          {/* CARD 3: Translation */}
           <ParallaxCard className="cn-card" parallaxSpeed={-0.05} delay={150}>
             <div className="cn-card-media cn-card-media--single">
               <img src="/assets/watch-rose.webp" alt="Dịch trực tiếp" className="cn-card-img cn-card-img--single" loading="lazy" />
@@ -132,7 +115,6 @@ export const ConnectFeatures: React.FC = () => {
             </div>
           </ParallaxCard>
 
-          {/* CARD 4: Smart stack */}
           <ParallaxCard className="cn-card" parallaxSpeed={-0.05} delay={200}>
             <div className="cn-card-media cn-card-media--single">
               <img src="/assets/watch-gold.webp" alt="Smart Stack" className="cn-card-img cn-card-img--single" loading="lazy" />
@@ -146,12 +128,10 @@ export const ConnectFeatures: React.FC = () => {
               </p>
             </div>
           </ParallaxCard>
-
         </div>
       </div>
 
       <style>{`
-        /* ── SECTION ── */
         .cn-section {
           background: var(--bg-primary);
           padding: 80px 0 96px;
@@ -168,17 +148,15 @@ export const ConnectFeatures: React.FC = () => {
           text-align: left;
         }
 
-        /* ── GRID ── */
         .cn-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 24px;
         }
 
-        /* ── CARD BASE ── */
         .cn-card {
           position: relative;
-          height: 600px;
+          height: 500px;
           border-radius: 28px;
           overflow: hidden;
           background: var(--surface-secondary);
@@ -198,7 +176,6 @@ export const ConnectFeatures: React.FC = () => {
           box-shadow: 0 30px 60px rgba(0,0,0,0.4);
         }
 
-        /* Gradient overlays for text readability */
         .cn-card-overlay {
           position: absolute;
           inset: 0;
@@ -223,7 +200,6 @@ export const ConnectFeatures: React.FC = () => {
           );
         }
 
-        /* Content layer */
         .cn-card-content {
           position: relative;
           z-index: 3;
@@ -271,7 +247,6 @@ export const ConnectFeatures: React.FC = () => {
           text-decoration: underline;
         }
 
-        /* Media layer */
         .cn-card-media {
           position: absolute;
           inset: 0;
@@ -281,15 +256,15 @@ export const ConnectFeatures: React.FC = () => {
           overflow: hidden;
         }
 
-        /* Image transitions (Parallax support: transition: transform 0.15s ease-out) */
         .cn-card-img {
           transition: transform 0.15s ease-out, filter 0.8s ease;
           display: block;
         }
 
-        /* ── CARD-SPECIFIC POSITIONING ── */
+        [data-theme='light'] .cn-card-img {
+          mix-blend-mode: multiply;
+        }
 
-        /* 1. Contact Card (Phủ tràn toàn thẻ) */
         .cn-card-media--contact {
           background: transparent;
         }
@@ -297,18 +272,17 @@ export const ConnectFeatures: React.FC = () => {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          object-position: center 85%;
-          transform: translateY(var(--parallax-y, 0px)) scale(1.05);
+          object-position: center bottom;
+          transform: translateY(var(--parallax-y, 0px)) scale(1.15);
         }
         [data-theme='dark'] .cn-card-img--contact {
           filter: brightness(0.8) contrast(1.1);
         }
 
         .cn-card:hover .cn-card-img--contact {
-          transform: translateY(var(--parallax-y, 0px)) scale(1.09) rotate(-1deg);
+          transform: translateY(var(--parallax-y, 0px)) scale(1.22) rotate(-1deg);
         }
 
-        /* 2. Dual watches (Đồng hồ kép nhạc/pay - phóng lớn lệch phải làm nền) */
         .cn-card-media--dual {
           background: radial-gradient(circle at 80% 80%, rgba(0, 102, 204, 0.08) 0%, transparent 60%);
         }
@@ -317,20 +291,20 @@ export const ConnectFeatures: React.FC = () => {
         }
         .cn-card-img--dual-left {
           position: absolute;
-          width: 60%;
+          width: 68%;
           height: auto;
-          bottom: -15%;
-          right: 20%;
+          bottom: -10%;
+          right: 22%;
           transform: translateY(var(--parallax-y, 0px)) rotate(-10deg) scale(1.02);
           z-index: 2;
           filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
         }
         .cn-card-img--dual-right {
           position: absolute;
-          width: 55%;
+          width: 62%;
           height: auto;
-          bottom: -10%;
-          right: -5%;
+          bottom: -8%;
+          right: -6%;
           transform: translateY(var(--parallax-y, 0px)) rotate(5deg) scale(1.02);
           z-index: 1;
           filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
@@ -341,13 +315,12 @@ export const ConnectFeatures: React.FC = () => {
         }
 
         .cn-card:hover .cn-card-img--dual-left {
-          transform: translateY(var(--parallax-y, 0px)) rotate(-7deg) translateY(-8px) scale(1.05);
+          transform: translateY(var(--parallax-y, 0px)) rotate(-7deg) translateY(-8px) scale(1.06);
         }
         .cn-card:hover .cn-card-img--dual-right {
-          transform: translateY(var(--parallax-y, 0px)) rotate(7deg) translateY(-4px) scale(1.05);
+          transform: translateY(var(--parallax-y, 0px)) rotate(7deg) translateY(-4px) scale(1.06);
         }
 
-        /* 3. Single Watch Renders (Rose and Gold) */
         .cn-card-media--single {
           background: radial-gradient(circle at 80% 85%, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
         }
@@ -356,10 +329,10 @@ export const ConnectFeatures: React.FC = () => {
         }
         .cn-card-img--single {
           position: absolute;
-          width: 75%;
+          width: 82%;
           height: auto;
-          bottom: -18%;
-          right: -10%;
+          bottom: -14%;
+          right: -8%;
           transform: translateY(var(--parallax-y, 0px)) rotate(-5deg) scale(1.02);
           filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
         }
@@ -368,10 +341,9 @@ export const ConnectFeatures: React.FC = () => {
         }
 
         .cn-card:hover .cn-card-img--single {
-          transform: translateY(var(--parallax-y, 0px)) rotate(-2deg) translateY(-10px) scale(1.06);
+          transform: translateY(var(--parallax-y, 0px)) rotate(-2deg) translateY(-8px) scale(1.06);
         }
 
-        /* ── Responsive ── */
         @media (max-width: 900px) {
           .cn-grid {
             grid-template-columns: 1fr;

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useTracking } from '../hooks/useTracking';
+import { useTracking } from '../../hooks/useTracking';
 import { Shield, Cpu, Zap, Droplets, Heart } from 'lucide-react';
-import { Reveal } from './Reveal';
+import { Reveal } from '../common/Reveal';
 
 export const SpecsTable: React.FC = () => {
   const { trackEvent } = useTracking();
   const [activeTab, setActiveTab] = useState<'hardware' | 'health' | 'battery'>('hardware');
-  const [activeHighlight, setActiveHighlight] = useState<number>(0); // Default to first certification
+  const [activeHighlight, setActiveHighlight] = useState<number>(0);
 
   const handleTabChange = (tab: 'hardware' | 'health' | 'battery') => {
     setActiveTab(tab);
@@ -51,7 +51,7 @@ export const SpecsTable: React.FC = () => {
       title: "Độ bền Chuẩn Quân Đội MIL-STD-810H",
       description: "Thiết bị đã xuất sắc vượt qua chuỗi 29 thử nghiệm va đập mạnh, chấn động tần số cao, áp suất chênh lệch và dải nhiệt sinh tồn từ -20°C đến 55°C.",
       icon: <Shield size={16} />,
-      color: "#10b981", // Emerald
+      color: "#10b981",
       rgb: "16, 185, 129",
       bgLight: "rgba(16, 185, 129, 0.08)"
     },
@@ -60,7 +60,7 @@ export const SpecsTable: React.FC = () => {
       title: "Kháng Nước Vượt Trội ISO 22810:2010",
       description: "Thiết kế kháng nước sâu đến 50 mét (5ATM), cho phép người dùng tự do tham gia bơi lội, lướt ván hay các môn thể thao dưới nước tốc độ cao.",
       icon: <Droplets size={16} />,
-      color: "#3b82f6", // Blue
+      color: "#3b82f6",
       rgb: "59, 130, 246",
       bgLight: "rgba(59, 130, 246, 0.08)"
     },
@@ -69,7 +69,7 @@ export const SpecsTable: React.FC = () => {
       title: "Vật Liệu Tương Thích Sinh Học Cao Cấp",
       description: "Sự kết hợp giữa Titanium Grade 5 siêu nhẹ và mặt lưng gốm tráng gương sinh học giúp loại bỏ 100% nguy cơ kích ứng da, an toàn tuyệt đối khi đeo 24/7.",
       icon: <Heart size={16} />,
-      color: "#ec4899", // Pink
+      color: "#ec4899",
       rgb: "236, 72, 153",
       bgLight: "rgba(236, 72, 153, 0.08)"
     }
@@ -94,14 +94,12 @@ export const SpecsTable: React.FC = () => {
     );
   };
 
-  // SVG circular properties
   const radius = 72;
   const cx = 110;
   const cy = 110;
 
-  // Polar coordinates calculation for icons
   const getIconCoords = (index: number) => {
-    const angles = [-30, 90, 210]; // mid-angles of segments in degrees
+    const angles = [-30, 90, 210];
     const rad = (angles[index] * Math.PI) / 180;
     const x = cx + radius * Math.cos(rad);
     const y = cy + radius * Math.sin(rad);
@@ -114,7 +112,6 @@ export const SpecsTable: React.FC = () => {
     <section id="specs" className="specs-section">
       <div className="container">
         
-        {/* Title */}
         <h2 className="specs-main-title">
           Thông số <span>Kỹ thuật</span> đỉnh cao
         </h2>
@@ -122,10 +119,7 @@ export const SpecsTable: React.FC = () => {
         <Reveal>
           <div className="specs-container-grid">
           
-          {/* ── LEFT COLUMN: Spec Sheet (Classic Table Style) ── */}
           <div className="specs-table-panel glass-panel">
-            
-            {/* Sliding Tab Segmented Switcher */}
             <div className="specs-tabs-switcher">
               <div 
                 className="tabs-active-indicator" 
@@ -154,24 +148,17 @@ export const SpecsTable: React.FC = () => {
               </button>
             </div>
             
-            {/* Spec items list */}
             {renderSpecs()}
           </div>
 
-          {/* ── RIGHT COLUMN: Planet Concentric Orbit Radar Dashboard ── */}
           <div className="specs-highlights-panel glass-panel">
-            
             <div className="highlights-dashboard-header">
               <h3 className="highlights-header">Chứng nhận tiêu chuẩn</h3>
             </div>
             
             <div className="highlights-split-layout">
-              
-              {/* Left inside panel: Concentric Orbit Rings SVG */}
               <div className="cert-circular-dashboard">
                 <svg className="cert-donut-svg" width="220" height="220" viewBox="0 0 220 220">
-                  
-                  {/* concentric ring 1: Inner small dashed orbit */}
                   <circle 
                     cx={cx} 
                     cy={cy} 
@@ -182,8 +169,6 @@ export const SpecsTable: React.FC = () => {
                     strokeDasharray="3 3"
                     opacity="0.3"
                   />
-
-                  {/* concentric ring 2 glow: Middle orbit glow */}
                   <circle 
                     cx={cx} 
                     cy={cy} 
@@ -197,8 +182,6 @@ export const SpecsTable: React.FC = () => {
                     strokeWidth="6"
                     opacity="0.15"
                   />
-
-                  {/* concentric ring 2: Main orbit ring – animated spin */}
                   <circle 
                     cx={cx} 
                     cy={cy} 
@@ -214,8 +197,6 @@ export const SpecsTable: React.FC = () => {
                     strokeDasharray="8 6"
                     opacity="0.9"
                   />
-
-                  {/* concentric ring 3: Outer dashed orbit */}
                   <circle 
                     cx={cx} 
                     cy={cy} 
@@ -226,8 +207,6 @@ export const SpecsTable: React.FC = () => {
                     strokeDasharray="6 4"
                     opacity="0.25"
                   />
-
-                  {/* concentric ring 4: Outermost thin solid border */}
                   <circle 
                     cx={cx} 
                     cy={cy} 
@@ -238,12 +217,10 @@ export const SpecsTable: React.FC = () => {
                     opacity="0.15"
                   />
                   
-                  {/* Concentric glowing target ring around the ACTIVE icon */}
                   {(() => {
                     const activeCoords = getIconCoords(activeHighlight);
                     return (
                       <>
-                        {/* Outer glow ring */}
                         <circle
                           cx={activeCoords.x}
                           cy={activeCoords.y}
@@ -256,7 +233,6 @@ export const SpecsTable: React.FC = () => {
                           }}
                           strokeWidth="8"
                         />
-                        {/* Pulsing ring */}
                         <circle
                           cx={activeCoords.x}
                           cy={activeCoords.y}
@@ -274,18 +250,16 @@ export const SpecsTable: React.FC = () => {
                     );
                   })()}
 
-                  {/* Render the Lucide icons inside the segments */}
                   {certifications.map((cert, index) => {
                     const coords = getIconCoords(index);
                     const isActive = activeHighlight === index;
-                    const ICON_R = 22; // icon circle radius
+                    const ICON_R = 22;
                     return (
                       <g 
                         key={index} 
                         transform={`translate(${coords.x - ICON_R}, ${coords.y - ICON_R})`}
                         className="pointer-events-none"
                       >
-                        {/* Soft glow backdrop */}
                         {isActive && (
                           <circle 
                             cx={ICON_R}
@@ -295,7 +269,6 @@ export const SpecsTable: React.FC = () => {
                             opacity="0.18"
                           />
                         )}
-                        {/* Main icon circle */}
                         <circle 
                           cx={ICON_R}
                           cy={ICON_R}
@@ -308,7 +281,6 @@ export const SpecsTable: React.FC = () => {
                             filter: isActive ? `drop-shadow(0 6px 14px ${cert.color}70)` : 'none' 
                           }}
                         />
-                        {/* Icon (24px, centered) */}
                         <g 
                           transform={`translate(${ICON_R - 12}, ${ICON_R - 12})`}
                           style={{ color: isActive ? '#fff' : 'var(--text-secondary)', transition: 'color 0.4s' }}
@@ -323,7 +295,6 @@ export const SpecsTable: React.FC = () => {
                     );
                   })}
                   
-                  {/* Center core pulse */}
                   <circle 
                     cx={cx} 
                     cy={cy} 
@@ -348,10 +319,9 @@ export const SpecsTable: React.FC = () => {
                     cy={cy} 
                     r="6" 
                     fill={activeCert.color}
-                    style={{ transition: 'fill 0.4s', filter: `drop-shadow(0 0 8px ${activeCert.color})` }}
+                    style={{ transition: 'fill 0.4s' }}
                   />
 
-                  {/* ──── INVISIBLE INTERACTIVE HIT TARGETS ──── */}
                   {certifications.map((cert, index) => {
                     const coords = getIconCoords(index);
                     return (
@@ -370,33 +340,24 @@ export const SpecsTable: React.FC = () => {
                 </svg>
               </div>
 
-              {/* Right inside panel: Beautiful cloud details popover bubble */}
               <div className="cert-details-side-panel">
                 <div className="cert-cloud-shadow-wrapper" key={activeHighlight}>
-                  <div 
-                    className="cert-side-details-card-cloud animate-fade-in"
-                    style={{ 
-                      '--accent-color': activeCert.color,
-                      '--accent-rgb': activeCert.rgb
-                    } as React.CSSProperties}
-                  >
-                    <div className="details-huge-num">{activeCert.num}</div>
+                  <div className="cert-side-details-card-cloud">
+                    <span className="details-huge-num" style={{ '--accent-color': activeCert.color } as React.CSSProperties}>
+                      {activeCert.num}
+                    </span>
                     <h4 className="details-title-minimal">{activeCert.title}</h4>
                     <p className="details-desc-minimal">{activeCert.description}</p>
                   </div>
                 </div>
               </div>
-              
             </div>
-            
           </div>
-          
-          </div>
+        </div>
         </Reveal>
       </div>
 
       <style>{`
-        /* ── SECTION ── */
         .specs-section {
           padding: 120px 0 100px;
           background-color: var(--bg-primary);
@@ -417,7 +378,6 @@ export const SpecsTable: React.FC = () => {
           color: var(--primary-gold);
         }
 
-        /* ── GRID LAYOUT ── */
         .specs-container-grid {
           display: grid;
           grid-template-columns: 1.1fr 0.9fr;
@@ -425,19 +385,17 @@ export const SpecsTable: React.FC = () => {
           align-items: stretch;
         }
 
-        /* ── LEFT COLUMN: TECH SPEC TABLE ── */
         .specs-table-panel {
-          background-color: var(--surface-secondary);
+          background-color: var(--bg-secondary);
           border-radius: 28px;
           padding: 40px;
-          border: none;
+          border: 1px solid var(--border-color);
           box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
           display: flex;
           flex-direction: column;
           gap: 16px;
         }
 
-        /* Sliding Tab Switcher */
         .specs-tabs-switcher {
           position: relative;
           display: flex;
@@ -484,7 +442,6 @@ export const SpecsTable: React.FC = () => {
           color: var(--bg-primary);
         }
 
-        /* Spec Rows styling */
         .specs-list-wrapper {
           display: flex;
           flex-direction: column;
@@ -539,12 +496,11 @@ export const SpecsTable: React.FC = () => {
           line-height: 1.4;
         }
 
-        /* ── RIGHT COLUMN: INTERACTIVE CERTIFICATIONS HIGHLIGHTS ── */
         .specs-highlights-panel {
-          background-color: var(--surface-secondary);
+          background-color: var(--bg-secondary);
           border-radius: 28px;
           padding: 40px;
-          border: none;
+          border: 1px solid var(--border-color);
           box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
           display: flex;
           flex-direction: column;
@@ -562,7 +518,6 @@ export const SpecsTable: React.FC = () => {
           margin: 0;
         }
 
-        /* Side-by-side layout (Circle on left, details on right) */
         .highlights-split-layout {
           display: grid;
           grid-template-columns: 220px 1fr;
@@ -571,7 +526,6 @@ export const SpecsTable: React.FC = () => {
           margin-top: 8px;
         }
 
-        /* Circular Donut Dashboard */
         .cert-circular-dashboard {
           display: flex;
           justify-content: center;
@@ -585,7 +539,6 @@ export const SpecsTable: React.FC = () => {
           overflow: visible;
         }
 
-        /* Main orbit ring slow spin */
         .orbit-ring-main {
           transform-origin: 110px 110px;
           animation: orbitSpin 20s linear infinite;
@@ -596,7 +549,6 @@ export const SpecsTable: React.FC = () => {
           to { transform: rotate(360deg); }
         }
 
-        /* Glowing radar outer target ring around ACTIVE icon */
         .active-target-ring {
           animation: activeTargetPulse 2s ease-in-out infinite;
           transform-origin: center;
@@ -607,22 +559,19 @@ export const SpecsTable: React.FC = () => {
           50% { transform: scale(1.12); opacity: 0.4; }
         }
 
-        /* Side details panel */
         .cert-details-side-panel {
           flex-grow: 1;
         }
 
-        /* Speech bubble wrapper – clean drop shadow */
         .cert-cloud-shadow-wrapper {
           display: flex;
           flex-grow: 1;
           position: relative;
         }
 
-        /* ── SPEECH BUBBLE CARD ── */
         .cert-side-details-card-cloud {
           position: relative;
-          background: var(--surface-secondary);
+          background: var(--bg-secondary);
           border: 1.5px solid var(--border-color);
           border-top: 3px solid var(--accent-color);
           border-radius: 20px;
@@ -650,7 +599,6 @@ export const SpecsTable: React.FC = () => {
           border-color: rgba(var(--accent-rgb), 0.2);
         }
 
-        /* Left-pointing arrow */
         .cert-side-details-card-cloud::before {
           content: '';
           position: absolute;
@@ -659,7 +607,7 @@ export const SpecsTable: React.FC = () => {
           transform: translateY(-50%) rotate(45deg);
           width: 18px;
           height: 18px;
-          background: var(--surface-secondary);
+          background: var(--bg-secondary);
           border-left: 1.5px solid var(--border-color);
           border-bottom: 1.5px solid var(--border-color);
           border-radius: 0 0 0 4px;
@@ -671,12 +619,10 @@ export const SpecsTable: React.FC = () => {
           border-color: rgba(var(--accent-rgb), 0.2);
         }
 
-        /* No ::after needed */
         .cert-side-details-card-cloud::after {
           display: none;
         }
 
-        /* Large minimalist index watermark */
         .details-huge-num {
           font-family: var(--font-sans);
           font-size: 3.2rem;
@@ -708,7 +654,6 @@ export const SpecsTable: React.FC = () => {
           z-index: 3;
         }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 1200px) {
           .highlights-split-layout {
             grid-template-columns: 1fr;
@@ -719,7 +664,6 @@ export const SpecsTable: React.FC = () => {
             margin-left: 0;
             margin-top: 0;
           }
-          /* Arrow points up when stacked vertically */
           .cert-side-details-card-cloud::before {
             left: 50%;
             top: -10px;
@@ -745,7 +689,6 @@ export const SpecsTable: React.FC = () => {
             margin-left: 16px;
             margin-top: 0;
           }
-          /* Arrow points left */
           .cert-side-details-card-cloud::before {
             left: -10px;
             top: 50%;
@@ -790,7 +733,6 @@ export const SpecsTable: React.FC = () => {
             margin-left: 0;
             margin-top: 0;
           }
-          /* Arrow points up when stacked vertically */
           .cert-side-details-card-cloud::before {
             left: 50%;
             top: -10px;

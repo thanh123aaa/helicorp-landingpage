@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Reveal } from './Reveal';
-import { useTrackingContext } from '../context/TrackingContext';
+import { Reveal } from '../common/Reveal';
+import { useTrackingContext } from '../../context/TrackingContext';
 import { Mail, User, Phone, ArrowRight, Gift, Sparkles, Calendar, CheckCircle2 } from 'lucide-react';
 
 export const NewsletterSubscription: React.FC = () => {
@@ -33,167 +33,154 @@ export const NewsletterSubscription: React.FC = () => {
       <div className="container">
         <Reveal>
           <div className="sub-glass-card">
-          
-          {/* Main layout split */}
-          <div className="sub-grid-layout">
-            
-            {/* Left side: Luxury Privileges and branding */}
-            <div className="sub-info-col">
-              <div className="privilege-tag">
-                <Sparkles size={12} /> Đặc quyền mở bán sớm
-              </div>
-              <h3 className="sub-title-heading">
-                Đăng ký sở hữu <span>HelioWatch Gen 3</span> đầu tiên
-              </h3>
-              <p className="sub-description">
-                Đừng bỏ lỡ ngày ra mắt chính thức. Hãy đăng ký ngay hôm nay để nhận thông báo sớm nhất cùng loạt đặc quyền giới hạn dành riêng cho 500 khách hàng đầu tiên.
-              </p>
-
-              <div className="privileges-list">
-                <div className="privilege-item">
-                  <div className="privilege-icon-box">
-                    <Gift size={18} />
-                  </div>
-                  <div>
-                    <h4>Quà tặng trị giá 2,000,000đ</h4>
-                    <p>Tặng kèm 01 Dây đeo Da Ý cao cấp và củ sạc nhanh sạc nhanh GaN 35W.</p>
-                  </div>
+            <div className="sub-grid-layout">
+              <div className="sub-info-col">
+                <div className="privilege-tag">
+                  <Sparkles size={12} /> Đặc quyền mở bán sớm
                 </div>
+                <h3 className="sub-title-heading">
+                  Đăng ký sở hữu <span>HelioWatch Gen 3</span> đầu tiên
+                </h3>
+                <p className="sub-description">
+                  Đừng bỏ lỡ ngày ra mắt chính thức. Hãy đăng ký ngay hôm nay để nhận thông báo sớm nhất cùng loạt đặc quyền giới hạn dành riêng cho 500 khách hàng đầu tiên.
+                </p>
 
-                <div className="privilege-item">
-                  <div className="privilege-icon-box">
-                    <Sparkles size={18} />
+                <div className="privileges-list">
+                  <div className="privilege-item">
+                    <div className="privilege-icon-box">
+                      <Gift size={18} />
+                    </div>
+                    <div>
+                      <h4>Quà tặng trị giá 2,000,000đ</h4>
+                      <p>Tặng kèm 01 Dây đeo Da Ý cao cấp và củ sạc nhanh sạc nhanh GaN 35W.</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4>Ưu đãi giảm giá 15%</h4>
-                    <p>Nhận mã giảm giá trực tiếp vào ngày mở bán cho chủ tài khoản đăng ký sớm.</p>
-                  </div>
-                </div>
 
-                <div className="privilege-item">
-                  <div className="privilege-icon-box">
-                    <Calendar size={18} />
+                  <div className="privilege-item">
+                    <div className="privilege-icon-box">
+                      <Sparkles size={18} />
+                    </div>
+                    <div>
+                      <h4>Ưu đãi giảm giá 15%</h4>
+                      <p>Nhận mã giảm giá trực tiếp vào ngày mở bán cho chủ tài khoản đăng ký sớm.</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4>Bảo hành đặc quyền 24 tháng</h4>
-                    <p>Nâng cấp gói bảo hành vàng 1 đổi 1 trong vòng 2 năm nếu có lỗi phần cứng từ nhà sản xuất.</p>
+
+                  <div className="privilege-item">
+                    <div className="privilege-icon-box">
+                      <Calendar size={18} />
+                    </div>
+                    <div>
+                      <h4>Bảo hành đặc quyền 24 tháng</h4>
+                      <p>Nâng cấp gói bảo hành vàng 1 đổi 1 trong vòng 2 năm nếu có lỗi phần cứng từ nhà sản xuất.</p>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <div className="sub-form-col">
+                {!isSubmitted ? (
+                  <form className="newsletter-form-container" onSubmit={handleSubmit}>
+                    <h4 className="form-title">Điền thông tin đăng ký</h4>
+                    
+                    <div className="input-group-row">
+                      <label className="input-field-label" htmlFor="name">Họ và tên *</label>
+                      <div className="input-wrapper-inner">
+                        <User size={18} className="input-icon" />
+                        <input 
+                          type="text" 
+                          id="name" 
+                          name="name" 
+                          placeholder="Nguyễn Văn A" 
+                          required 
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="input-group-row">
+                      <label className="input-field-label" htmlFor="email">Địa chỉ Email *</label>
+                      <div className="input-wrapper-inner">
+                        <Mail size={18} className="input-icon" />
+                        <input 
+                          type="email" 
+                          id="email" 
+                          name="email" 
+                          placeholder="email@example.com" 
+                          required 
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="input-group-row">
+                      <label className="input-field-label" htmlFor="phone">Số điện thoại</label>
+                      <div className="input-wrapper-inner">
+                        <Phone size={18} className="input-icon" />
+                        <input 
+                          type="tel" 
+                          id="phone" 
+                          name="phone" 
+                          placeholder="090 1234 567" 
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      className={`sub-submit-btn ${isSubmitting ? 'loading' : ''}`}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <span className="spinner-loader" />
+                      ) : (
+                        <>
+                          Đăng ký ngay <ArrowRight size={16} />
+                        </>
+                      )}
+                    </button>
+
+                    <p className="privacy-note">
+                      Chúng tôi bảo mật 100% thông tin cá nhân của bạn và cam kết không gửi thư rác.
+                    </p>
+                  </form>
+                ) : (
+                  <div className="success-state-container animate-fade-in">
+                    <div className="success-badge-pulse">
+                      <CheckCircle2 size={40} className="success-badge-icon" />
+                    </div>
+                    <h3>Đăng ký thành công!</h3>
+                    <p className="success-message">
+                      Chào mừng <strong>{formData.name}</strong> đến với câu lạc bộ Helio! Chúng tôi đã gửi email xác nhận cùng mã ưu đãi đặc quyền sớm đến địa chỉ:
+                    </p>
+                    <div className="success-email-bubble">
+                      {formData.email}
+                    </div>
+                    <p className="success-cta-text">
+                      Mã ưu đãi mở bán sớm và quà tặng đi kèm đã được giữ chỗ riêng cho bạn. Hãy kiểm tra hộp thư đến (hoặc hòm thư Spam) nhé!
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-
-            {/* Right side: Interactive Form or Success Panel */}
-            <div className="sub-form-col">
-              {!isSubmitted ? (
-                <form className="newsletter-form-container" onSubmit={handleSubmit}>
-                  <h4 className="form-title">Điền thông tin đăng ký</h4>
-                  
-                  {/* Name field */}
-                  <div className="input-group-row">
-                    <label className="input-field-label" htmlFor="name">Họ và tên *</label>
-                    <div className="input-wrapper-inner">
-                      <User size={18} className="input-icon" />
-                      <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        placeholder="Nguyễn Văn A" 
-                        required 
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Email field */}
-                  <div className="input-group-row">
-                    <label className="input-field-label" htmlFor="email">Địa chỉ Email *</label>
-                    <div className="input-wrapper-inner">
-                      <Mail size={18} className="input-icon" />
-                      <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        placeholder="email@example.com" 
-                        required 
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Phone field */}
-                  <div className="input-group-row">
-                    <label className="input-field-label" htmlFor="phone">Số điện thoại</label>
-                    <div className="input-wrapper-inner">
-                      <Phone size={18} className="input-icon" />
-                      <input 
-                        type="tel" 
-                        id="phone" 
-                        name="phone" 
-                        placeholder="090 1234 567" 
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <button 
-                    type="submit" 
-                    className={`sub-submit-btn ${isSubmitting ? 'loading' : ''}`}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <span className="spinner-loader" />
-                    ) : (
-                      <>
-                        Đăng ký ngay <ArrowRight size={16} />
-                      </>
-                    )}
-                  </button>
-
-                  <p className="privacy-note">
-                    Chúng tôi bảo mật 100% thông tin cá nhân của bạn và cam kết không gửi thư rác.
-                  </p>
-                </form>
-              ) : (
-                <div className="success-state-container animate-fade-in">
-                  <div className="success-badge-pulse">
-                    <CheckCircle2 size={40} className="success-badge-icon" />
-                  </div>
-                  <h3>Đăng ký thành công!</h3>
-                  <p className="success-message">
-                    Chào mừng <strong>{formData.name}</strong> đến với câu lạc bộ Helio! Chúng tôi đã gửi email xác nhận cùng mã ưu đãi đặc quyền sớm đến địa chỉ:
-                  </p>
-                  <div className="success-email-bubble">
-                    {formData.email}
-                  </div>
-                  <p className="success-cta-text">
-                    Mã ưu đãi mở bán sớm và quà tặng đi kèm đã được giữ chỗ riêng cho bạn. Hãy kiểm tra hộp thư đến (hoặc hòm thư Spam) nhé!
-                  </p>
-                </div>
-              )}
-            </div>
-
           </div>
-
-        </div>
         </Reveal>
       </div>
 
       <style>{`
-        /* ── SECTION ── */
         .subscription-section {
           padding: 80px 0 100px;
           background-color: var(--bg-primary);
           position: relative;
         }
 
-        /* ── CARD CONTAINER ── */
         .sub-glass-card {
           background: var(--surface-secondary);
           border-radius: 36px;
@@ -209,7 +196,6 @@ export const NewsletterSubscription: React.FC = () => {
           border-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* Inner soft glows */
         .sub-glass-card::before {
           content: '';
           position: absolute;
@@ -228,7 +214,6 @@ export const NewsletterSubscription: React.FC = () => {
           opacity: 0.15;
         }
 
-        /* ── GRID LAYOUT ── */
         .sub-grid-layout {
           display: grid;
           grid-template-columns: 1.1fr 0.9fr;
@@ -236,7 +221,6 @@ export const NewsletterSubscription: React.FC = () => {
           align-items: center;
         }
 
-        /* ── LEFT COLUMN ── */
         .sub-info-col {
           display: flex;
           flex-direction: column;
@@ -281,7 +265,6 @@ export const NewsletterSubscription: React.FC = () => {
           margin: 0;
         }
 
-        /* Privileges bullets */
         .privileges-list {
           display: flex;
           flex-direction: column;
@@ -323,7 +306,6 @@ export const NewsletterSubscription: React.FC = () => {
           margin: 0;
         }
 
-        /* ── RIGHT COLUMN: FORM CONTAINER ── */
         .newsletter-form-container {
           background-color: var(--bg-primary);
           border: 1px solid var(--border-color);
@@ -400,7 +382,6 @@ export const NewsletterSubscription: React.FC = () => {
           color: var(--text-primary);
         }
 
-        /* Submit Button */
         .sub-submit-btn {
           height: 52px;
           border-radius: 14px;
@@ -437,7 +418,6 @@ export const NewsletterSubscription: React.FC = () => {
           margin: 0;
         }
 
-        /* Loading spinner */
         .spinner-loader {
           width: 20px;
           height: 20px;
@@ -451,7 +431,6 @@ export const NewsletterSubscription: React.FC = () => {
           to { transform: rotate(360deg); }
         }
 
-        /* ── SUCCESS STATE STATE ── */
         .success-state-container {
           background-color: var(--bg-primary);
           border: 1px solid var(--border-color);
@@ -518,7 +497,6 @@ export const NewsletterSubscription: React.FC = () => {
           margin: 0;
         }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 992px) {
           .sub-grid-layout {
             grid-template-columns: 1fr;

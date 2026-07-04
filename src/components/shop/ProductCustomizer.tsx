@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Reveal } from './Reveal';
-import { useShop, productColors, PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_ORIGINAL_PRICE, getCustomWatchImage } from '../context/ShopContext';
-import { useToast } from '../context/ToastContext';
-import { useTracking } from '../hooks/useTracking';
+import { Reveal } from '../common/Reveal';
+import { useShop, productColors, PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_ORIGINAL_PRICE, getCustomWatchImage } from '../../context/ShopContext';
+import { useToast } from '../../context/ToastContext';
+import { useTracking } from '../../hooks/useTracking';
 import { Heart, ShoppingBag, Ruler, Check } from 'lucide-react';
 
 export const ProductCustomizer: React.FC = () => {
@@ -11,8 +11,8 @@ export const ProductCustomizer: React.FC = () => {
   const { trackEvent } = useTracking();
 
   const [selectedColor, setSelectedColor] = useState('black');
-  const [selectedSize, setSelectedSize] = useState<number>(45); // Default size 45mm
-  const [selectedStrap, setSelectedStrap] = useState<string>('silicon'); // Default strap type
+  const [selectedSize, setSelectedSize] = useState<number>(45);
+  const [selectedStrap, setSelectedStrap] = useState<string>('silicon');
   const [quantity, setQuantity] = useState<number>(1);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -81,200 +81,185 @@ export const ProductCustomizer: React.FC = () => {
     <section id="customizer" className="customizer-section">
       <div className="container">
         
-        {/* Configurator Header */}
         <h2 className="customizer-main-title">
           Cá nhân hóa <span>HelioWatch</span> của bạn
         </h2>
         
         <Reveal>
           <div className="customizer-grid">
-          
-          {/* ── LEFT COLUMN: Massive Interactive Watch Preview ── */}
-          <div className="customizer-visual-panel">
-            <div className="customizer-preview-box">
-              {/* Glowing aura color matched to selected watch */}
-              <div 
-                className="customizer-glow-aura" 
-                style={{ backgroundColor: activeColorObj.hex }}
-              />
-              <img 
-                src={getCustomWatchImage(selectedColor, selectedStrap)} 
-                alt={`${PRODUCT_NAME} ${activeColorObj.name}`} 
-                className={`customizer-watch-image ${imageLoading ? 'image-loading' : ''}`}
-                key={`${selectedColor}-${selectedStrap}`}
-                onLoad={() => setImageLoading(false)}
-              />
-              {imageLoading && (
-                <div className="customizer-skeleton" />
+            <div className="customizer-visual-panel">
+              <div className="customizer-preview-box">
+                <div 
+                  className="customizer-glow-aura" 
+                  style={{ backgroundColor: activeColorObj.hex }}
+                />
+                <img 
+                  src={getCustomWatchImage(selectedColor, selectedStrap)} 
+                  alt={`${PRODUCT_NAME} ${activeColorObj.name}`} 
+                  className={`customizer-watch-image ${imageLoading ? 'image-loading' : ''}`}
+                  key={`${selectedColor}-${selectedStrap}`}
+                  onLoad={() => setImageLoading(false)}
+                />
+                {imageLoading && (
+                  <div className="customizer-skeleton" />
+                )}
+              </div>
+              
+              {recentlyViewed.length > 0 && (
+                <div className="recently-viewed-panel">
+                  <h4 className="recent-title">Đã xem gần đây:</h4>
+                  <div className="recent-list">
+                    {recentlyViewed.map(colorId => {
+                      const colorObj = productColors.find(c => c.id === colorId);
+                      if (!colorObj) return null;
+                      return (
+                        <button
+                          key={colorId}
+                          className={`recent-item ${selectedColor === colorId ? 'active' : ''}`}
+                          onClick={() => handleColorChange(colorId, colorObj.name)}
+                          title={colorObj.name}
+                        >
+                          <img src={colorObj.image} alt={colorObj.name} className="recent-thumb-img" />
+                          <span className="recent-color-badge" style={{ backgroundColor: colorObj.hex }} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </div>
-            
-            {/* Recently Viewed (Minimal circles) */}
-            {recentlyViewed.length > 0 && (
-              <div className="recently-viewed-panel">
-                <h4 className="recent-title">Đã xem gần đây:</h4>
-                <div className="recent-list">
-                  {recentlyViewed.map(colorId => {
-                    const colorObj = productColors.find(c => c.id === colorId);
-                    if (!colorObj) return null;
-                    return (
-                      <button
-                        key={colorId}
-                        className={`recent-item ${selectedColor === colorId ? 'active' : ''}`}
-                        onClick={() => handleColorChange(colorId, colorObj.name)}
-                        title={colorObj.name}
-                      >
-                        <img src={colorObj.image} alt={colorObj.name} className="recent-thumb-img" />
-                        <span className="recent-color-badge" style={{ backgroundColor: colorObj.hex }} />
-                      </button>
-                    );
-                  })}
+
+            <div className="customizer-form-panel">
+              <div className="product-meta">
+                <span className="product-category">Đồng hồ sức khỏe thế hệ mới</span>
+                <h3 className="product-name">{PRODUCT_NAME}</h3>
+                
+                <div className="product-pricing">
+                  <span className="current-price">{formatPrice(PRODUCT_PRICE)}</span>
+                  <span className="original-price">{formatPrice(PRODUCT_ORIGINAL_PRICE)}</span>
+                  <span className="discount-tag">Tiết kiệm 17%</span>
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* ── RIGHT COLUMN: Sleek Customizer Controls ── */}
-          <div className="customizer-form-panel">
-            
-            {/* Meta details */}
-            <div className="product-meta">
-              <span className="product-category">Đồng hồ sức khỏe thế hệ mới</span>
-              <h3 className="product-name">{PRODUCT_NAME}</h3>
-              
-              <div className="product-pricing">
-                <span className="current-price">{formatPrice(PRODUCT_PRICE)}</span>
-                <span className="original-price">{formatPrice(PRODUCT_ORIGINAL_PRICE)}</span>
-                <span className="discount-tag">Tiết kiệm 17%</span>
-              </div>
-            </div>
-
-            {/* Selector Option 1: Watch Colors */}
-            <div className="option-group">
-              <h4 className="option-title">
-                Màu vỏ Titan: <span>{activeColorObj.name}</span>
-              </h4>
-              <div className="color-selectors-list">
-                {productColors.map(color => (
-                  <button
-                    key={color.id}
-                    className={`color-btn-item ${selectedColor === color.id ? 'active' : ''}`}
-                    onClick={() => handleColorChange(color.id, color.name)}
-                    style={{ '--color-hex': color.hex } as React.CSSProperties}
-                    title={color.name}
-                  >
-                    <span className="color-dot-inner"></span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Selector Option 2: Case Sizes (Sliding Toggle) */}
-            <div className="option-group">
-              <div className="option-title-row">
+              <div className="option-group">
                 <h4 className="option-title">
-                  Kích thước vỏ: <span>{selectedSize}mm</span>
+                  Màu vỏ Titan: <span>{activeColorObj.name}</span>
                 </h4>
-                <button className="size-guide-btn" onClick={() => setShowSizeGuide(true)}>
-                  <Ruler size={14} /> Hướng dẫn chọn size
-                </button>
+                <div className="color-selectors-list">
+                  {productColors.map(color => (
+                    <button
+                      key={color.id}
+                      className={`color-btn-item ${selectedColor === color.id ? 'active' : ''}`}
+                      onClick={() => handleColorChange(color.id, color.name)}
+                      style={{ '--color-hex': color.hex } as React.CSSProperties}
+                      title={color.name}
+                    >
+                      <span className="color-dot-inner"></span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              
-              <div className="custom-segmented-control">
-                <div 
-                  className="segmented-control-indicator" 
-                  style={{
-                    left: selectedSize === 41 ? '2px' : 'calc(50% + 2px)',
-                    width: 'calc(50% - 4px)'
-                  }}
-                />
-                <button 
-                  className={`segmented-btn ${selectedSize === 41 ? 'active' : ''}`}
-                  onClick={() => handleSizeChange(41)}
-                >
-                  Size 41mm
-                </button>
-                <button 
-                  className={`segmented-btn ${selectedSize === 45 ? 'active' : ''}`}
-                  onClick={() => handleSizeChange(45)}
-                >
-                  Size 45mm
-                </button>
-              </div>
-            </div>
 
-            {/* Selector Option 3: Strap Types (Sliding Toggle) */}
-            <div className="option-group">
-              <h4 className="option-title">
-                Dây đeo: <span>{strapTypes.find(s => s.id === selectedStrap)?.name}</span>
-              </h4>
-              
-              <div className="custom-segmented-control">
-                <div 
-                  className="segmented-control-indicator" 
-                  style={{
-                    left: selectedStrap === 'silicon' ? '2px' : selectedStrap === 'leather' ? 'calc(33.33% + 2px)' : 'calc(66.66% + 2px)',
-                    width: 'calc(33.33% - 4px)'
-                  }}
-                />
-                {strapTypes.map(strap => (
-                  <button
-                    key={strap.id}
-                    className={`segmented-btn ${selectedStrap === strap.id ? 'active' : ''}`}
-                    onClick={() => handleStrapChange(strap.id)}
-                  >
-                    {strap.name}
+              <div className="option-group">
+                <div className="option-title-row">
+                  <h4 className="option-title">
+                    Kích thước vỏ: <span>{selectedSize}mm</span>
+                  </h4>
+                  <button className="size-guide-btn" onClick={() => setShowSizeGuide(true)}>
+                    <Ruler size={14} /> Hướng dẫn chọn size
                   </button>
-                ))}
+                </div>
+                
+                <div className="custom-segmented-control">
+                  <div 
+                    className="segmented-control-indicator" 
+                    style={{
+                      left: selectedSize === 41 ? '2px' : 'calc(50% + 2px)',
+                      width: 'calc(50% - 4px)'
+                    }}
+                  />
+                  <button 
+                    className={`segmented-btn ${selectedSize === 41 ? 'active' : ''}`}
+                    onClick={() => handleSizeChange(41)}
+                  >
+                    Size 41mm
+                  </button>
+                  <button 
+                    className={`segmented-btn ${selectedSize === 45 ? 'active' : ''}`}
+                    onClick={() => handleSizeChange(45)}
+                  >
+                    Size 45mm
+                  </button>
+                </div>
+              </div>
+
+              <div className="option-group">
+                <h4 className="option-title">
+                  Dây đeo: <span>{strapTypes.find(s => s.id === selectedStrap)?.name}</span>
+                </h4>
+                
+                <div className="custom-segmented-control">
+                  <div 
+                    className="segmented-control-indicator" 
+                    style={{
+                      left: selectedStrap === 'silicon' ? '2px' : selectedStrap === 'leather' ? 'calc(33.33% + 2px)' : 'calc(66.66% + 2px)',
+                      width: 'calc(33.33% - 4px)'
+                    }}
+                  />
+                  {strapTypes.map(strap => (
+                    <button
+                      key={strap.id}
+                      className={`segmented-btn ${selectedStrap === strap.id ? 'active' : ''}`}
+                      onClick={() => handleStrapChange(strap.id)}
+                    >
+                      {strap.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="purchase-controls-row">
+                <div className="quantity-stepper">
+                  <button 
+                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    className="stepper-btn"
+                  >-</button>
+                  <span className="stepper-val">{quantity}</span>
+                  <button 
+                    onClick={() => setQuantity(q => q + 1)}
+                    className="stepper-btn"
+                  >+</button>
+                </div>
+
+                <button 
+                  className={`custom-cart-btn ${isAdding ? 'btn-adding' : ''}`} 
+                  onClick={handleAddToCart}
+                  disabled={isAdding}
+                >
+                  {isAdding ? (
+                    <>
+                      <Check size={18} className="animate-scale-up" /> Đã thêm!
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag size={18} /> Thêm vào giỏ hàng
+                    </>
+                  )}
+                </button>
+
+                <button 
+                  className={`custom-wishlist-btn ${isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'active' : ''}`} 
+                  onClick={handleToggleWishlist}
+                  title="Lưu vào mục yêu thích"
+                >
+                  <Heart size={20} fill={isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'var(--brand-error)' : 'none'} stroke={isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'var(--brand-error)' : 'currentColor'} />
+                </button>
               </div>
             </div>
-
-            {/* Stepper + Add to Cart + Wishlist row */}
-            <div className="purchase-controls-row">
-              
-              <div className="quantity-stepper">
-                <button 
-                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  className="stepper-btn"
-                >-</button>
-                <span className="stepper-val">{quantity}</span>
-                <button 
-                  onClick={() => setQuantity(q => q + 1)}
-                  className="stepper-btn"
-                >+</button>
-              </div>
-
-              <button 
-                className={`custom-cart-btn ${isAdding ? 'btn-adding' : ''}`} 
-                onClick={handleAddToCart}
-                disabled={isAdding}
-              >
-                {isAdding ? (
-                  <>
-                    <Check size={18} className="animate-scale-up" /> Đã thêm!
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag size={18} /> Thêm vào giỏ hàng
-                  </>
-                )}
-              </button>
-
-              <button 
-                className={`custom-wishlist-btn ${isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'active' : ''}`} 
-                onClick={handleToggleWishlist}
-                title="Lưu vào mục yêu thích"
-              >
-                <Heart size={20} fill={isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'var(--brand-error)' : 'none'} stroke={isInWishlist(selectedColor, selectedSize, selectedStrap) ? 'var(--brand-error)' : 'currentColor'} />
-              </button>
-            </div>
-            
           </div>
-        </div>
         </Reveal>
       </div>
 
-      {/* Size Guide Modal */}
       {showSizeGuide && (
         <div className="size-guide-modal-overlay">
           <div className="size-guide-modal">
@@ -324,7 +309,6 @@ export const ProductCustomizer: React.FC = () => {
       )}
 
       <style>{`
-        /* ── CUSTOMIZER SECTION ── */
         .customizer-section {
           padding: 120px 0 100px;
           background-color: var(--bg-primary);
@@ -346,7 +330,6 @@ export const ProductCustomizer: React.FC = () => {
           color: var(--primary-gold);
         }
 
-        /* ── GRID LAYOUT ── */
         .customizer-grid {
           display: grid;
           grid-template-columns: 1.1fr 0.9fr;
@@ -354,7 +337,6 @@ export const ProductCustomizer: React.FC = () => {
           align-items: center;
         }
 
-        /* ── LEFT COLUMN: PREVIEW ── */
         .customizer-visual-panel {
           display: flex;
           flex-direction: column;
@@ -373,7 +355,6 @@ export const ProductCustomizer: React.FC = () => {
           justify-content: center;
         }
 
-        /* Dynamic soft breathing halo aura behind watch */
         .customizer-glow-aura {
           position: absolute;
           width: 280px;
@@ -402,7 +383,7 @@ export const ProductCustomizer: React.FC = () => {
           z-index: 2;
           max-width: 82%;
           height: auto;
-          border-radius: 24px; /* Bo viền ảnh mềm mại để che góc vuông */
+          border-radius: 24px;
           filter: drop-shadow(0 20px 40px rgba(0,0,0,0.12));
           animation: watchFloat 6s ease-in-out infinite;
         }
@@ -416,7 +397,6 @@ export const ProductCustomizer: React.FC = () => {
           50% { transform: translateY(-10px) rotate(1deg); }
         }
 
-        /* Recently viewed thumbnails */
         .recently-viewed-panel {
           display: flex;
           flex-direction: column;
@@ -480,7 +460,6 @@ export const ProductCustomizer: React.FC = () => {
           border: 2px solid var(--surface-primary);
         }
 
-        /* ── RIGHT COLUMN: CONFIGURATOR FORM ── */
         .customizer-form-panel {
           display: flex;
           flex-direction: column;
@@ -539,7 +518,6 @@ export const ProductCustomizer: React.FC = () => {
           align-self: center;
         }
 
-        /* Option group container */
         .option-group {
           display: flex;
           flex-direction: column;
@@ -580,7 +558,6 @@ export const ProductCustomizer: React.FC = () => {
           text-decoration: underline;
         }
 
-        /* Color selectors (Double rings style like Apple) */
         .color-selectors-list {
           display: flex;
           gap: 16px;
@@ -613,7 +590,6 @@ export const ProductCustomizer: React.FC = () => {
           box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        /* ── SLIDING TABS (Segmented Control) ── */
         .custom-segmented-control {
           position: relative;
           display: flex;
@@ -656,7 +632,6 @@ export const ProductCustomizer: React.FC = () => {
           color: var(--bg-primary);
         }
 
-        /* ── FOOTER CONTROLS ROW ── */
         .purchase-controls-row {
           display: flex;
           align-items: center;
@@ -666,7 +641,6 @@ export const ProductCustomizer: React.FC = () => {
           margin-top: 8px;
         }
 
-        /* Rounded Stepper */
         .quantity-stepper {
           display: inline-flex;
           align-items: center;
@@ -699,7 +673,6 @@ export const ProductCustomizer: React.FC = () => {
           color: var(--text-primary);
         }
 
-        /* Cart & Wishlist Buttons */
         .custom-cart-btn {
           flex-grow: 1;
           height: 52px;
@@ -754,7 +727,6 @@ export const ProductCustomizer: React.FC = () => {
           color: var(--brand-error);
         }
 
-        /* ── SIZE GUIDE MODAL ── */
         .size-guide-modal-overlay {
           position: fixed;
           inset: 0;
@@ -765,6 +737,12 @@ export const ProductCustomizer: React.FC = () => {
           align-items: center;
           justify-content: center;
           padding: 24px;
+          animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes modalFadeIn {
+          from { opacity: 0; backdrop-filter: blur(0px); }
+          to { opacity: 1; backdrop-filter: blur(8px); }
         }
 
         .size-guide-modal {
@@ -775,6 +753,18 @@ export const ProductCustomizer: React.FC = () => {
           border-radius: 28px;
           overflow: hidden;
           box-shadow: var(--glass-shadow);
+          animation: modalScaleUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes modalScaleUp {
+          from {
+            transform: scale(0.92) translateY(20px);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+          }
         }
 
         .modal-header {
@@ -855,7 +845,6 @@ export const ProductCustomizer: React.FC = () => {
           gap: 10px;
         }
 
-        /* ── SKELETON & MICRO-INTERACTION EFFECTS ── */
         .customizer-skeleton {
           position: absolute;
           z-index: 3;
@@ -889,7 +878,6 @@ export const ProductCustomizer: React.FC = () => {
           to { transform: scale(1); opacity: 1; }
         }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 992px) {
           .customizer-grid {
             grid-template-columns: 1fr;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useShop } from '../context/ShopContext';
+import { useShop } from '../../context/ShopContext';
 import { X, Trash2, Heart, ShoppingBag } from 'lucide-react';
 
 interface WishlistDrawerProps {
@@ -17,16 +17,12 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
 
   return (
     <>
-      {/* Backdrop */}
       <div 
         className={`drawer-backdrop ${isOpen ? 'is-open' : ''}`}
         onClick={onClose}
       />
       
-      {/* Drawer */}
       <div className={`drawer-container ${isOpen ? 'is-open' : ''}`}>
-        
-        {/* Header */}
         <div className="drawer-header">
           <h2 className="drawer-title">Sản phẩm yêu thích ({wishlist.length})</h2>
           <button onClick={onClose} className="drawer-close-btn" aria-label="Đóng danh sách yêu thích">
@@ -34,7 +30,6 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
           </button>
         </div>
 
-        {/* Wishlist Items */}
         <div className="drawer-body custom-drawer-scrollbar">
           {wishlist.length === 0 ? (
             <div className="drawer-empty-state">
@@ -48,12 +43,10 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
             <div className="wishlist-items-list">
               {wishlist.map((item) => (
                 <div key={item.id} className="wishlist-item-row">
-                  {/* Image container */}
                   <div className="item-image-wrapper">
                     <img src={item.image} alt={item.name} className="item-image" />
                   </div>
                   
-                  {/* Details container */}
                   <div className="item-details-wrapper">
                     <div className="item-header-row">
                       <div className="item-title-col">
@@ -72,12 +65,10 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
                     </div>
                     
                     <div className="item-bottom-row">
-                      {/* Price */}
                       <span className="item-price-text">
                         {item.price.toLocaleString('vi-VN')}đ
                       </span>
 
-                      {/* Move to Cart button */}
                       <button 
                         onClick={() => handleMoveToCart(item)}
                         className="move-to-cart-grid-btn"
@@ -94,7 +85,6 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
       </div>
 
       <style>{`
-        /* ── MINIMALIST HUMAN-DESIGNED DRAWER STYLES ── */
         .drawer-backdrop {
           position: fixed;
           inset: 0;
@@ -136,7 +126,6 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
           transform: translateX(0);
         }
 
-        /* ── HEADER ── */
         .drawer-header {
           display: flex;
           align-items: center;
@@ -169,14 +158,12 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
           color: var(--text-primary);
         }
 
-        /* ── BODY ── */
         .drawer-body {
           flex-grow: 1;
           overflow-y: auto;
           padding: 0 28px;
         }
 
-        /* Scrollbar */
         .custom-drawer-scrollbar::-webkit-scrollbar {
           width: 4px;
         }
@@ -188,7 +175,6 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
           border-radius: 4px;
         }
 
-        /* Empty State */
         .drawer-empty-state {
           height: 100%;
           display: flex;
@@ -218,7 +204,6 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
           padding: 4px 8px;
         }
 
-        /* ── WISHLIST ITEMS LIST ── */
         .wishlist-items-list {
           display: flex;
           flex-direction: column;

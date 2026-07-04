@@ -1,12 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import { useTracking } from '../hooks/useTracking';
+import { useTracking } from '../../hooks/useTracking';
 
 interface HeroProps {
   onCtaClick: () => void;
   onExploreClick: () => void;
 }
 
-// Canvas particle animation — smartwatch tech aesthetic
 const useHeroCanvas = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => {
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -24,7 +23,6 @@ const useHeroCanvas = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => 
     resize();
     window.addEventListener('resize', resize);
 
-    // ── Particles ──────────────────────────────────────────────
     const PARTICLE_COUNT = 120;
     type Particle = {
       x: number; y: number;
@@ -46,7 +44,6 @@ const useHeroCanvas = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => 
     };
     const particles: Particle[] = Array.from({ length: PARTICLE_COUNT }, spawn);
 
-    // ── Rings (pulse rings radiating outward) ──────────────────
     type Ring = { x: number; y: number; r: number; maxR: number; alpha: number; hue: number };
     const rings: Ring[] = [];
     let ringTimer = 0;
@@ -56,13 +53,10 @@ const useHeroCanvas = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => 
       rings.push({ x: cx, y: cy, r: 0, maxR: 120 + Math.random() * 80, alpha: 0.4, hue: 210 });
     };
 
-    // ── Draw loop ──────────────────────────────────────────────
     const draw = () => {
-      // Dark base with motion blur
       ctx.fillStyle = 'rgba(0, 4, 14, 0.18)';
       ctx.fillRect(0, 0, W, H);
 
-      // Rings
       ringTimer++;
       if (ringTimer % 90 === 0) spawnRing();
       for (let i = rings.length - 1; i >= 0; i--) {
@@ -77,7 +71,6 @@ const useHeroCanvas = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => 
         ctx.stroke();
       }
 
-      // Connections between nearby particles
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -95,7 +88,6 @@ const useHeroCanvas = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => 
         }
       }
 
-      // Particles
       for (const p of particles) {
         p.x += p.vx; p.y += p.vy; p.life++;
         if (p.life > p.maxLife) Object.assign(p, spawn());
@@ -111,7 +103,6 @@ const useHeroCanvas = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => 
       animId = requestAnimationFrame(draw);
     };
 
-    // Initial dark fill
     ctx.fillStyle = '#00040e';
     ctx.fillRect(0, 0, W, H);
     draw();
@@ -135,28 +126,21 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onExploreClick }) => {
 
   return (
     <section id="hero" className="hero-section">
-      {/* Canvas animated background */}
       <canvas ref={canvasRef} className="hero-canvas-bg" />
-
-      {/* Ảnh smartwatch mờ phía sau */}
       <div className="hero-img-overlay" />
-
-      {/* Gradient overlay */}
       <div className="hero-gradient-overlay" />
 
       <div className="hero-banner-container">
-        {/* Bottom Left Content */}
         <div className="hero-text-wrapper animate-slide-up">
           <div className="hero-brand-title">
             <span className="brand-logo"></span> HELIO WATCH SERIES 3
           </div>
           <h1 className="hero-main-title">
-            Siêu công cụ chăm sóc <br />
+            Siêu công cụ <span className="nowrap">chăm sóc</span> <br />
             sức khỏe của bạn.
           </h1>
         </div>
 
-        {/* Bottom Right CTA Card */}
         <div className="hero-cta-card-wrapper animate-fade-in">
           <div className="hero-cta-pill glass-panel">
             <span className="price-text">Từ 9.990.000đ</span>
@@ -176,7 +160,6 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onExploreClick }) => {
           overflow: hidden;
         }
 
-        /* Canvas nền động */
         .hero-canvas-bg {
           position: absolute;
           inset: 0;
@@ -186,7 +169,6 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onExploreClick }) => {
           display: block;
         }
 
-        /* Ảnh smartwatch mờ phía sau (ken burns effect) */
         .hero-img-overlay {
           position: absolute;
           inset: 0;
@@ -202,7 +184,6 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onExploreClick }) => {
           100% { transform: scale(1.03) translateX(8px); }
         }
 
-        /* Gradient đè lên để đảm bảo text đọc được */
         .hero-gradient-overlay {
           position: absolute;
           inset: 0;
@@ -230,8 +211,12 @@ export const Hero: React.FC<HeroProps> = ({ onCtaClick, onExploreClick }) => {
         .hero-text-wrapper {
           position: relative;
           z-index: 3;
-          max-width: 600px;
+          max-width: 800px;
           text-align: left;
+        }
+
+        .nowrap {
+          white-space: nowrap;
         }
 
         .hero-brand-title {

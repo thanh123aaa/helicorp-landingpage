@@ -1,42 +1,32 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { useTheme } from '../context/ThemeContext';
+import React, { useRef, useEffect } from 'react';
+import { useTheme } from '../../context/ThemeContext';
+import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { Reveal } from '../common/Reveal';
 
-// Scroll reveal (chạy động cả lúc vào và ra khỏi màn hình)
-const useReveal = (threshold = 0.1) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current; if (!el) return;
-    const obs = new IntersectionObserver(([e]) => {
-      setVisible(e.isIntersecting);
-    }, { threshold, rootMargin: '-40px 0px -40px 0px' });
-    obs.observe(el); return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, visible };
-};
-
-const Reveal: React.FC<{ children: React.ReactNode; className?: string; delay?: number }> = ({ children, className = '', delay = 0 }) => {
-  const { ref, visible } = useReveal();
-  return <div ref={ref} className={`rv ${className} ${visible ? 'rv--on' : ''}`} style={{ transitionDelay: `${delay}ms` }}>{children}</div>;
-};
-
-// ParallaxCard: Tích hợp đồng thời cả hiệu ứng cuộn Parallax và Reveal xuất hiện
-const ParallaxCard: React.FC<{
+interface ParallaxCardProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
   parallaxSpeed?: number;
-}> = ({ children, className = '', delay = 0, parallaxSpeed = -0.06 }) => {
-  const { ref: revealRef, visible } = useReveal();
+}
+
+const ParallaxCard: React.FC<ParallaxCardProps> = ({
+  children,
+  className = '',
+  delay = 0,
+  parallaxSpeed = -0.06
+}) => {
+  const { ref: revealRef, visible } = useScrollReveal();
   const parallaxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = parallaxRef.current; if (!el) return;
+    const el = parallaxRef.current;
+    if (!el) return;
+
     const handleScroll = () => {
       const rect = el.getBoundingClientRect();
       const viewHeight = window.innerHeight;
       if (rect.top < viewHeight && rect.bottom > 0) {
-        // Tính toán độ lệch tương đối của card so với trung tâm viewport
         const centerOffset = (rect.top + rect.height / 2) - viewHeight / 2;
         const translateY = centerOffset * parallaxSpeed;
         const targets = el.querySelectorAll('.fn-card-bg, .cn-card-img');
@@ -45,6 +35,7 @@ const ParallaxCard: React.FC<{
         });
       }
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
@@ -72,7 +63,6 @@ export const FitnessFeatures: React.FC = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  // Dynamic asset paths based on theme
   const images = {
     rings: isDark ? '/assets/fit-rings-dark.webp' : '/assets/fit-rings-light.webp',
     dual: isDark ? '/assets/fit-dual-dark.webp' : '/assets/fit-dual-light.webp',
@@ -83,17 +73,13 @@ export const FitnessFeatures: React.FC = () => {
   return (
     <section id="fitness" className="fn-section">
       <div className="container">
-        
-        {/* Header */}
         <Reveal>
           <h2 className="fn-main-title">Thể Dục Và Hoạt Động</h2>
         </Reveal>
 
-        {/* ── CARD 1: Large Row (Rings) ── */}
         <ParallaxCard className="fn-card fn-card--large" parallaxSpeed={-0.08}>
           <img src={images.rings} alt="" className="fn-card-bg fn-card-bg--rings" loading="lazy" />
           <div className="fn-card-overlay fn-card-overlay--large" />
-          
           <div className="fn-card-content">
             <h3 className="fn-card-title">
               Di chuyển. Thể dục. Đứng.<br />
@@ -105,14 +91,10 @@ export const FitnessFeatures: React.FC = () => {
           </div>
         </ParallaxCard>
 
-        {/* ── CARD 2 & 3: Twin Grid ── */}
         <div className="fn-grid">
-          
-          {/* Card Left */}
           <ParallaxCard className="fn-card fn-card--small" parallaxSpeed={-0.05} delay={100}>
             <img src={images.dual} alt="" className="fn-card-bg fn-card-bg--bottom" loading="lazy" />
             <div className="fn-card-overlay fn-card-overlay--small" />
-            
             <div className="fn-card-content">
               <h3 className="fn-card-title fn-card-title--sm">Đo mọi hình thức vận động của bạn.</h3>
               <p className="fn-card-desc fn-card-desc--sm">
@@ -121,11 +103,9 @@ export const FitnessFeatures: React.FC = () => {
             </div>
           </ParallaxCard>
 
-          {/* Card Right */}
           <ParallaxCard className="fn-card fn-card--small" parallaxSpeed={-0.05} delay={200}>
             <img src={images.yellow} alt="" className="fn-card-bg fn-card-bg--bottom" loading="lazy" />
             <div className="fn-card-overlay fn-card-overlay--small" />
-            
             <div className="fn-card-content">
               <h3 className="fn-card-title fn-card-title--sm">Đưa các bài tập của bạn lên tầm cao mới.</h3>
               <p className="fn-card-desc fn-card-desc--sm">
@@ -135,11 +115,9 @@ export const FitnessFeatures: React.FC = () => {
           </ParallaxCard>
         </div>
 
-        {/* ── CARD 4: Large Row (Chart) ── */}
         <ParallaxCard className="fn-card fn-card--large" parallaxSpeed={-0.08}>
           <img src={images.chart} alt="" className="fn-card-bg fn-card-bg--chart" loading="lazy" />
           <div className="fn-card-overlay fn-card-overlay--large" />
-          
           <div className="fn-card-content">
             <h3 className="fn-card-title">
               Công cụ mạnh mẽ giúp bạn chinh phục mục tiêu.
@@ -149,11 +127,9 @@ export const FitnessFeatures: React.FC = () => {
             </p>
           </div>
         </ParallaxCard>
-
       </div>
 
       <style>{`
-        /* ── SECTION ── */
         .fn-section {
           background: var(--bg-primary);
           padding: 100px 0 96px;
@@ -170,7 +146,6 @@ export const FitnessFeatures: React.FC = () => {
           text-align: left;
         }
 
-        /* ── CARD BASE ── */
         .fn-card {
           position: relative;
           border-radius: 28px;
@@ -191,7 +166,6 @@ export const FitnessFeatures: React.FC = () => {
           box-shadow: 0 30px 60px rgba(0,0,0,0.4);
         }
 
-        /* Background image (Parallax support: scale(1.05) is buffer for sliding gaps) */
         .fn-card-bg {
           position: absolute;
           inset: 0;
@@ -206,7 +180,6 @@ export const FitnessFeatures: React.FC = () => {
           transform: scale(1.02);
         }
 
-        /* Position variations for watch images inside cover */
         .fn-card-bg--rings {
           object-position: 95% center;
         }
@@ -219,7 +192,6 @@ export const FitnessFeatures: React.FC = () => {
           object-position: center bottom;
         }
 
-        /* Đồng bộ ảnh nền bao phủ 100% diện tích thẻ */
         .fn-card-bg--rings,
         .fn-card-bg--chart {
           object-fit: cover;
@@ -240,7 +212,6 @@ export const FitnessFeatures: React.FC = () => {
           object-position: center 85%;
         }
 
-        /* Blending modes */
         .fn-card-bg {
           mix-blend-mode: multiply;
         }
@@ -248,7 +219,6 @@ export const FitnessFeatures: React.FC = () => {
           mix-blend-mode: normal;
         }
 
-        /* Gradient overlays for text readability */
         .fn-card-overlay {
           position: absolute;
           inset: 0;
@@ -296,7 +266,6 @@ export const FitnessFeatures: React.FC = () => {
           );
         }
 
-        /* Text Content area */
         .fn-card-content {
           position: relative;
           z-index: 3;
@@ -338,7 +307,6 @@ export const FitnessFeatures: React.FC = () => {
           line-height: 1.6;
         }
 
-        /* ── CARD LARGE (Horizontal layout) ── */
         .fn-card--large {
           height: 480px;
         }
@@ -350,7 +318,6 @@ export const FitnessFeatures: React.FC = () => {
           justify-content: center;
         }
 
-        /* ── TWIN GRID ── */
         .fn-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -367,16 +334,6 @@ export const FitnessFeatures: React.FC = () => {
           padding: 44px 44px 0 44px;
         }
 
-        /* ── Responsive ── */
-        @media (max-width: 900px) {
-          .fn-card--large {
-            height: auto;
-          }
-          .fn-card--large .fn-card-content {
-            width: 100%;
-            padding: 40px 32px 320px;
-          }
-        /* ── Responsive ── */
         @media (max-width: 900px) {
           .fn-card--large {
             height: auto;
@@ -384,12 +341,12 @@ export const FitnessFeatures: React.FC = () => {
           }
           .fn-card--large .fn-card-content {
             width: 100%;
-            padding: 40px 32px 300px; /* Thêm padding dưới để đẩy text lên trên ảnh nền */
+            padding: 40px 32px 300px;
           }
           
           .fn-card-bg--rings,
           .fn-card-bg--chart {
-            object-position: center bottom; /* Trên mobile đẩy ảnh xuống dưới đáy */
+            object-position: center bottom;
           }
           
           .fn-grid {

@@ -14,13 +14,14 @@ export const useScrollReveal = (threshold = 0.1, rootMargin = '-40px 0px -40px 0
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setVisible(entry.isIntersecting);
-        if (entry.isIntersecting && !hasTracked) {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          
           // Detect parent section to track which section was scrolled to
           const section = el.closest('section');
           const sectionId = section?.id || el.id || '';
           
-          if (sectionId) {
+          if (sectionId && !hasTracked) {
             const sectionNames: Record<string, string> = {
               'customizer': 'Cấu hình sản phẩm (Customizer)',
               'specs': 'Thông số kỹ thuật (Specs)',
@@ -34,8 +35,8 @@ export const useScrollReveal = (threshold = 0.1, rootMargin = '-40px 0px -40px 0
             trackEvent(`Cuộn tới phần: ${sectionName}`, 'Scroll Behaviour', `Section ID: ${sectionId}`);
             hasTracked = true; // Avoid double tracking per reveal instance
           }
-        } else if (!entry.isIntersecting) {
-          hasTracked = false; // Reset when leaving view
+          
+          observer.unobserve(el);
         }
       },
       { threshold, rootMargin }

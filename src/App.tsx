@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { BentoFeatures } from './components/BentoFeatures';
-import { FitnessFeatures } from './components/FitnessFeatures';
-import { ConnectFeatures } from './components/ConnectFeatures';
-import { ProductCustomizer } from './components/ProductCustomizer';
-import { SpecsTable } from './components/SpecsTable';
-import { NewsletterSubscription } from './components/NewsletterSubscription';
-import { Footer } from './components/Footer';
-import { CartDrawer } from './components/CartDrawer';
-import { WishlistDrawer } from './components/WishlistDrawer';
-import { Chatbot } from './components/Chatbot';
+import { Header } from './components/layout/Header';
+import { Hero } from './components/features/Hero';
+import { BentoFeatures } from './components/features/BentoFeatures';
+import { FitnessFeatures } from './components/features/FitnessFeatures';
+import { ConnectFeatures } from './components/features/ConnectFeatures';
+import { ProductCustomizer } from './components/shop/ProductCustomizer';
+import { SpecsTable } from './components/features/SpecsTable';
+import { NewsletterSubscription } from './components/features/NewsletterSubscription';
+import { Footer } from './components/layout/Footer';
+import { CartDrawer } from './components/shop/CartDrawer';
+import { WishlistDrawer } from './components/shop/WishlistDrawer';
+import { Chatbot } from './components/chatbot/Chatbot';
 
 const App: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -24,8 +24,14 @@ const App: React.FC = () => {
       />
       <main style={{ flexGrow: 1 }}>
         <Hero
-          onCtaClick={() => { }}
-          onExploreClick={() => { }}
+          onCtaClick={() => {
+            const el = document.getElementById('customizer');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+          onExploreClick={() => {
+            const el = document.getElementById('features');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
         />
         <BentoFeatures />
         <FitnessFeatures />
