@@ -314,6 +314,7 @@ export const ProductCustomizer: React.FC = () => {
           background-color: var(--bg-primary);
           transition: background 0.5s ease;
           border-top: 1px solid var(--border-color);
+          overflow-x: hidden;
         }
 
         .customizer-main-title {
@@ -539,8 +540,11 @@ export const ProductCustomizer: React.FC = () => {
 
         .option-title-row {
           display: flex;
+          flex-wrap: wrap;
           justify-content: space-between;
           align-items: center;
+          gap: 4px;
+          overflow: visible;
         }
 
         .size-guide-btn {
@@ -596,8 +600,10 @@ export const ProductCustomizer: React.FC = () => {
           background: var(--bg-secondary);
           border-radius: 100px;
           padding: 2px;
-          height: 48px;
+          height: 52px;
           overflow: hidden;
+          max-width: 100%;
+          width: 100%;
         }
 
         .segmented-control-indicator {
@@ -898,6 +904,18 @@ export const ProductCustomizer: React.FC = () => {
           }
         }
 
+        @media (max-width: 768px) {
+          .option-title-row {
+            flex-wrap: wrap;
+            gap: 6px;
+          }
+
+          .size-guide-btn {
+            font-size: 0.8rem;
+            flex-shrink: 0;
+          }
+        }
+
         @media (max-width: 576px) {
           .customizer-section {
             padding: 80px 0 60px;
@@ -913,14 +931,14 @@ export const ProductCustomizer: React.FC = () => {
           }
 
           .custom-segmented-control {
-            height: 44px;
+            height: 52px;
           }
 
           .custom-segmented-control.strap-control {
             flex-direction: column;
             height: auto;
             border-radius: 16px;
-            gap: 6px;
+            gap: 8px;
             background: transparent;
             padding: 0;
             overflow: visible;
@@ -931,15 +949,18 @@ export const ProductCustomizer: React.FC = () => {
           }
 
           .custom-segmented-control.strap-control .segmented-btn {
-            height: 48px;
-            border: 1px solid var(--border-color);
+            height: 60px;
+            border: 1.5px solid var(--border-color);
             background: var(--surface-primary);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
           }
 
           .custom-segmented-control.strap-control .segmented-btn.active {
