@@ -348,9 +348,7 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick }) 
           .mobile-menu-btn {
             display: flex;
           }
-        }
 
-        @media (max-width: 480px) {
           .actions-container {
             gap: 4px;
           }
