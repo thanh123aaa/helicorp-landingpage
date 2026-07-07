@@ -465,6 +465,9 @@ export const ProductCustomizer: React.FC = () => {
           display: flex;
           flex-direction: column;
           gap: 36px;
+          max-width: 100%;
+          overflow: hidden;
+          min-width: 0;
         }
 
         .product-meta {
@@ -484,11 +487,12 @@ export const ProductCustomizer: React.FC = () => {
 
         .product-name {
           font-family: var(--font-sans);
-          font-size: 2.6rem;
+          font-size: clamp(1.8rem, 5vw, 2.6rem);
           font-weight: 800;
           letter-spacing: -0.03em;
           color: var(--text-primary);
           margin-bottom: 16px;
+          word-break: break-word;
         }
 
         .product-pricing {
@@ -523,6 +527,8 @@ export const ProductCustomizer: React.FC = () => {
           display: flex;
           flex-direction: column;
           gap: 14px;
+          min-width: 0;
+          max-width: 100%;
         }
 
         .option-title {
@@ -921,6 +927,43 @@ export const ProductCustomizer: React.FC = () => {
             padding: 80px 0 60px;
           }
 
+          .customizer-grid {
+            overflow: hidden;
+            max-width: 100%;
+          }
+
+          .customizer-form-panel {
+            overflow: hidden;
+            max-width: 100%;
+            padding: 0;
+          }
+
+          .product-name {
+            font-size: 1.75rem;
+          }
+
+          .current-price {
+            font-size: 1.5rem;
+          }
+
+          .original-price {
+            font-size: 1rem;
+          }
+
+          .product-pricing {
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+
+          .option-title-row {
+            gap: 8px;
+          }
+
+          .size-guide-btn {
+            font-size: 0.78rem;
+            white-space: nowrap;
+          }
+
           .purchase-controls-row {
             flex-wrap: wrap;
           }
@@ -932,6 +975,7 @@ export const ProductCustomizer: React.FC = () => {
 
           .custom-segmented-control {
             height: 52px;
+            max-width: 100%;
           }
 
           .custom-segmented-control.strap-control {
