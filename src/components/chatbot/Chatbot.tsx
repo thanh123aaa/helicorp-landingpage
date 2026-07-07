@@ -790,6 +790,49 @@ Hãy trả lời câu hỏi của khách hàng một cách ngắn gọn (tối �
           background-color: var(--border-color);
           color: var(--text-primary);
         }
+
+        @media (max-width: 576px) {
+          .chatbot-window-panel {
+            bottom: 0;
+            right: 0;
+            left: 0;
+            width: 100vw;
+            height: 100%;
+            max-height: 100vh;
+            max-width: 100vw;
+            border-radius: 0;
+            border: none;
+            z-index: 10000;
+            transform: translateY(100%);
+          }
+
+          .chatbot-window-panel.is-open {
+            transform: translateY(0);
+          }
+
+          .chatbot-float-btn {
+            bottom: 16px;
+            right: 16px;
+          }
+
+          .chatbot-float-btn.active {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+          }
+
+          .chatbot-messages-body {
+            padding: 16px;
+          }
+
+          .chatbot-header {
+            padding: 12px 16px;
+          }
+
+          .chatbot-input-footer {
+            padding: 12px 16px;
+          }
+        }
       `}</style>
     </>
   );

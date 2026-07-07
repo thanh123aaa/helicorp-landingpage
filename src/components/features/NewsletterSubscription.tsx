@@ -16,7 +16,7 @@ export const NewsletterSubscription: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.phone) return;
+    if (!formData.name || !formData.email) return;
 
     setIsSubmitting(true);
     trackEvent(`Submit Đăng ký nhận thông tin: ${formData.email}`, 'Newsletter Subscription', 'Form Submit');

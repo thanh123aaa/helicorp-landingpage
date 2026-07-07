@@ -334,6 +334,26 @@ export const WishlistDrawer: React.FC<WishlistDrawerProps> = ({ isOpen, onClose 
         [data-theme='dark'] .move-to-cart-grid-btn:hover {
           background-color: #e5e5e5;
         }
+
+        @media (max-width: 576px) {
+          .drawer-header {
+            padding: 16px 20px;
+          }
+          .drawer-body {
+            padding: 0 20px;
+          }
+          .wishlist-item-row {
+            padding: 16px 0;
+            gap: 12px;
+          }
+          .item-image-wrapper {
+            width: 72px;
+            height: 72px;
+          }
+          .item-title-text {
+            font-size: 0.9rem;
+          }
+        }
       `}</style>
     </>
   );

@@ -198,7 +198,7 @@ export const ProductCustomizer: React.FC = () => {
                   Dây đeo: <span>{strapTypes.find(s => s.id === selectedStrap)?.name}</span>
                 </h4>
                 
-                <div className="custom-segmented-control">
+                <div className="custom-segmented-control strap-control">
                   <div 
                     className="segmented-control-indicator" 
                     style={{
@@ -914,6 +914,38 @@ export const ProductCustomizer: React.FC = () => {
 
           .custom-segmented-control {
             height: 44px;
+          }
+
+          .custom-segmented-control.strap-control {
+            flex-direction: column;
+            height: auto;
+            border-radius: 16px;
+            gap: 6px;
+            background: transparent;
+            padding: 0;
+            overflow: visible;
+          }
+
+          .custom-segmented-control.strap-control .segmented-control-indicator {
+            display: none;
+          }
+
+          .custom-segmented-control.strap-control .segmented-btn {
+            height: 48px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-primary);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+          }
+
+          .custom-segmented-control.strap-control .segmented-btn.active {
+            background: var(--text-primary);
+            border-color: var(--text-primary);
+            color: var(--bg-primary);
           }
         }
       `}</style>

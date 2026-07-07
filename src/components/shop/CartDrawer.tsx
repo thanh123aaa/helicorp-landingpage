@@ -474,6 +474,29 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
         [data-theme='dark'] .checkout-submit-btn:hover {
           background-color: #e5e5e5;
         }
+
+        @media (max-width: 576px) {
+          .drawer-header {
+            padding: 16px 20px;
+          }
+          .drawer-body {
+            padding: 0 20px;
+          }
+          .drawer-footer {
+            padding: 20px;
+          }
+          .cart-item-row {
+            padding: 16px 0;
+            gap: 12px;
+          }
+          .item-image-wrapper {
+            width: 72px;
+            height: 72px;
+          }
+          .item-title-text {
+            font-size: 0.9rem;
+          }
+        }
       `}</style>
     </>
   );

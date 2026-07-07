@@ -700,7 +700,7 @@ export const SpecsTable: React.FC = () => {
           }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .tab-switch-btn span {
             display: none;
           }

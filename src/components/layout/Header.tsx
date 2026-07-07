@@ -350,6 +350,24 @@ export const Header: React.FC<HeaderProps> = ({ onCartClick, onWishlistClick }) 
           }
         }
 
+        @media (max-width: 480px) {
+          .actions-container {
+            gap: 4px;
+          }
+          .action-btn {
+            width: 36px;
+            height: 36px;
+          }
+          .logo-container {
+            gap: 6px;
+            font-size: 1.15rem;
+          }
+          .logo-icon-wrapper {
+            width: 32px;
+            height: 32px;
+          }
+        }
+
         .micro-bounce-cart {
           animation: cartBounce 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
         }
